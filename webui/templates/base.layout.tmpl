@@ -1,0 +1,68 @@
+
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css"> {{/*changed path*/}}
+    <script type="text/javascript" src="/static/javascript.js"></script> {{/*changed path*/}}
+    <title>Forum-{{template "title" .}}</title>
+</head>
+<body id="body" onscroll="header()">
+    <header id="header" onmouseover="header2()" onmouseout="header3()">
+        <a href="/"><img id="logo" src="https://assets.website-files.com/61ed56ae9da9fd7e0ef0a967/61f12ec2e784a6708ebf43fe_WavelessDefault.svg"></a>
+        {{if .Session.IsLoggedin}}
+            <div id="headerbuttons"><a href="/addpost" id="createpost">Create post</a>
+            <div id="user">
+                <img src="https://cdn-icons-png.flaticon.com/512/1144/1144760.png" id="avatar" class="likeicon"></img>
+                <span id="username">Username</span>
+            </div>
+        {{else}}
+            <p id="signinup"><button class="signin" onclick="signUp()">Sign up</button> / <button class="signin" onclick="signIn()">Sign in</button></p></div>
+        {{end}}
+        <span style="clear:both"></span>
+    </header>
+    
+    {{if .Session.IsLoggedin}}
+
+    {{else}}
+        <div id="darkness" onclick="darkness()"></div>
+        <div id="signinform">
+            <form action="/login" method="post">
+                <input type="text" id="username" name="name" placeholder="username"><br><br>
+                <input type="password" class="password" name="password" placeholder="password"><br>
+                <input type="checkbox" onclick="ShowPassword()">Show Password<br><br>
+                <input type="submit" value="Sign in" class="signinupformbutton"><br><br><br>
+                <label for="signupformbutton">Don't have an account?</label><br><br>
+                <input type="button" class="signinupformbutton" name="signupformbutton" value="Sign up" onclick="signUp()">
+            </form>
+        </div>
+        <div id="signupform">
+            <form action="/signup" method="post">
+                <input type="email" id="email" name="email" placeholder="e-mail"><br><br> {{/*changed type to email*/}}
+                <input type="text" id="username" name="name" placeholder="username"><br><br>
+                <input type="password" id="password" class="password" name="password" placeholder="password"><br><br>
+                <input type="password" id="confirm_password" class="password" name="password" placeholder="confirm password" changed=checkPasswords()><span id="warning">passwords do not match</span><br>
+                <input type="checkbox" onclick="ShowPassword()">Show Password <br><br>
+                <input type="submit" value="Sign up" class="signinupformbutton"><br><br><br>
+                <label for="signupformbutton">Already have an account?</label><br><br>
+                <input type="button" class="signinupformbutton" name="signinformbutton" value="Sign in" onclick="signIn()">
+            </form>
+        </div>
+    {{end}}
+
+    <main>
+    {{template "main" .}}
+    </main>
+    
+    <footer id="footer">
+        <p id="footertext">Created with love in 2023</p>
+    </footer>
+</body>
+</html>
+{{end}}

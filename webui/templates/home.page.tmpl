@@ -1,0 +1,47 @@
+{{template "base" .}}
+
+{{define "title"}}Home{{end}}
+
+{{define "main"}}
+
+
+    <div id="filters">
+        <button id="openfiltersbutton" class="likeicon" onclick="openFilters()"><img class="likeicon" id="filterslogo" src="https://cdn-icons-png.flaticon.com/512/3161/3161370.png"></img><img class="likeicon" id="closefilterslogo" src="https://cdn-icons-png.flaticon.com/512/2734/2734822.png"></img></button>
+        <div id="filterform" class="post" style="display:none">
+            <form id="fform">
+                <p>Select a category:</p>
+                {{range .Categories}}
+                    <input type="checkbox" id = {{.ID}} class="categories" name="category"  value={{.ID}} value={{.Name}}>
+                    <label for="cats">{{.Name}}</label><br>
+                {{end}}
+                <input type="submit" value="Filter" class="signinupformbutton">
+            </form>
+        </div>
+    </div>
+
+
+    {{$loggedin := .Session.IsLoggedin}}
+    <div class="post">
+        {{range .Posts}}
+        <a href="/post/p{{.ID}}">
+        <p id={{.ID}} class="post-id">#{{.ID}}{{range .Categories}} <span id={{.ID}}>, #{{.Name}}</span>{{end}}</p>
+        <div id="{{.ID}}-content" class="post-content">
+            <p><b>{{.Theme}}</b></p>
+            {{.Message.Content}}
+        </div>
+        </a>
+        <div id="reactions">
+            {{if $loggedin}}
+                <button id="{{.ID}}-post_like" class="likeicon" name="post_like" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                <button id="{{.ID}}-post_dislike" class="likeicon" name="post_dislike" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
+            {{else}} 
+                <button id="{{.ID}}-post_like" class="likeicon not-active-link" name="post_like" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                <button id="{{.ID}}-post_dislike" class="likeicon not-active-link" name="post_dislike" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></img></button>
+            {{end}}
+                <a href="/post/p{{.ID}}" id="{{.ID}}-comments-link" class="comments-link">Comments</a>
+        </div>
+        {{else}}
+        <p>Be the first post creator</p>
+        {{end}}
+    </div>
+{{end}}

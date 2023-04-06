@@ -1,0 +1,53 @@
+{{template "base" .}}
+
+{{define "title"}}Post{{.Post.ID}}{{end}}
+
+{{define "main"}}
+    {{$loggedin := .Session.IsLoggedin}}
+    <div class="post">
+        {{with .Post}}
+            <p id ={{.ID}} class="post-id">#{{.ID}} {{range .Categories}} <span id={{.ID}}>, #{{.Name}}</span>{{end}}</p>
+            <div id="{{.ID}}-content" class="post-content">
+                <p><b>{{.Theme}}</b></p>
+                {{.Message.Content}}
+            </div>
+        {{end}}
+        <div id="reactions">
+            {{if $loggedin}}
+                {{with .Post}}
+                    <button id="{{.ID}}-post_like" class="likeicon" name="post_like" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                    <button id="{{.ID}}-post_dislike" class="likeicon" name="post_dislike" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
+                {{end}}
+            {{else}} 
+                {{with .Post}}
+                    <button id="{{.ID}}-post_like" class="likeicon not-active-link" name="post_like" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                    <button id="{{.ID}}-post_dislike" class="likeicon not-active-link" name="post_dislike" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></img></button>
+                {{end}}
+            {{end}}
+        </div>
+    </div>
+
+    {{range .Post.Comments}}
+        <div id="comments-{{.ID}}" class="post">
+            <div id="{{.ID}}-comment-content" class="post-content">
+                {{.Message.Content}}
+            </div>
+            <div id="reactions">
+                {{if $loggedin}}
+                    <button id="{{.ID}}-comment_like" class="likeicon" name="comment_like" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                    <button id="{{.ID}}-comment_dislike" class="likeicon" name="comment_dislike" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
+                {{else}} 
+                    <button id="{{.ID}}-comment_like" class="likeicon not-active-link" name="comment_like" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                    <button id="{{.ID}}-comment_dislike" class="likeicon not-active-link" name="comment_dislike" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></img></button>
+                {{end}}
+            </div>
+        </div>
+    {{end}}
+    {{if .Session.IsLoggedin}}
+        <form id="writecomment" class="post" method="post">
+            <input id="invisible" name="authorID" value="{{.Session.User.ID}}"></input>
+            <textarea id="newcomment" name="content" placeholder="Write your comment..."></textarea>
+            <button id="submitcomment" class="signinupformbutton">Submit</button>
+        </form>
+    {{end}}
+{{end}}  

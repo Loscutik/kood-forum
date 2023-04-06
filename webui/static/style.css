@@ -1,0 +1,285 @@
+#body {
+    background-color: rgb(246, 246, 246);
+    margin: 0px;
+}
+#header {
+    display: block;
+    position: fixed;
+    padding: 0px;
+    width: 100%;
+    top: 0;
+    left: 0;
+    height: 30 px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0px 3px 50px rgba(0, 0, 0, 0.1);
+    transition: 0.2s;
+    z-index: 90;
+}
+#logo {
+    display: block;
+    float:left;
+    margin-left: 40px;
+    height: 55px;
+}
+#createpost {
+    display: block;
+    margin-right: 25px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 85px;
+    background-color: rgb(255, 193, 47);
+    border-radius: 20px;
+    padding: 10px;
+    padding-left: 35px;
+    padding-right: 35px;
+    text-decoration: none;
+    color:white;
+    font-family: 'Roboto', sans-serif;
+    transition: 0.2s;
+}
+#createpost:hover {
+    background-color: rgb(234, 176, 43);
+}
+#signinup {
+    display: flex;
+    float: right;
+    margin-right: 40px;
+    margin-top: 20px;
+    font-family: 'Roboto', sans-serif;
+}
+.signin {
+    display: block;
+    text-decoration: none;
+    background: none;
+	color: inherit;
+	border: none;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    color:rgb(64, 64, 64);
+    transition: 0.2s;
+}
+.signin:hover {
+    color: rgb(234, 176, 43);
+    text-decoration: underline;
+}
+#headerbuttons {
+    float:right;
+    display: flex;
+}
+#user {
+    display: flex;
+    float: right;
+    margin-right: 40px;
+    margin-top: 20px;
+    font-family: 'Roboto', sans-serif;
+}
+#avatar {
+    display: flex;
+    margin-right: 10px;
+    margin-top: -6px;
+}
+#textarea_newpost {
+    margin: 20px;
+    width: 638px;
+    height: 350px;
+    resize: none;
+    padding: 10px;
+}
+#PostTopic {
+    margin: 20px 20px 0px 20px;
+    width: 646px;
+    height: 30px;
+    padding: 5px;
+}
+#submitpost {
+    width: 140px;
+    height: 40px;
+    margin: 6px 0px 25px 540px;
+    border-radius: 3px;
+}
+#submitcomment {
+    width: 140px;
+    height: 40px;
+    margin: 6px 0px 25px 540px;
+    border-radius: 3px;
+}
+#newcomment {
+    margin: 20px;
+    width: 655px;
+    height: 150px;
+    resize: none;
+}
+#filterform {
+    display: none;
+}
+#fform {
+    margin: 20px;
+}
+#openfiltersbutton {
+    display: block;
+    position: absolute;
+    z-index: 50;
+    margin-left: 998px;
+}
+#filterslogo {
+    display: block;
+}
+#closefilterslogo {
+    display: none;
+}
+#darkness {
+    display: none;
+    z-index: 98;
+    position: fixed;
+    margin-top: -220px;
+    width: 100%;
+    height: 130%;
+    background-color: rgba(0, 0, 0, 0.6);
+    transition: 0.2s;
+}
+#signinform {
+    display: none;
+    margin-left: 37%;
+    position: fixed;
+    z-index: 99;
+    margin-top: 20px;
+    background-color: rgb(255, 255, 255);
+    border:rgba(0, 0, 0, 0.09);
+    border-style: solid;
+    font-family: 'Roboto', sans-serif;
+    color:rgb(64, 64, 64);
+    border-width: 1px;
+    padding: 40px;
+    transition: 0.2s;
+}
+#signupform {
+    display: none;
+    margin-left: 37%;
+    position: fixed;
+    z-index: 100;
+    margin-top: 20px;
+    background-color: rgb(255, 255, 255);
+    border:rgba(0, 0, 0, 0.09);
+    font-family: 'Roboto', sans-serif;
+    color:rgb(64, 64, 64);
+    border-style: solid;
+    border-width: 1px;
+    padding: 40px;
+    transition: 0.2s;
+}
+.signinupformbutton {
+    display: block;
+    margin-right: 25px;
+    margin-bottom: 10px;
+    width: 120px;
+    background-color: rgb(255, 193, 47);
+    border-radius: 20px;
+    border-style: none;
+    padding: 10px;
+    padding-left: 35px;
+    padding-right: 35px;
+    text-decoration: none;
+    color:white;
+    font-family: 'Roboto', sans-serif;
+    transition: 0.2s;
+}
+.signinupformbutton:hover {
+    background-color: rgb(234, 176, 43);
+}
+.post {
+    display: block;
+    width: 700px;
+    border:rgba(0, 0, 0, 0.09);
+    border-style: solid;
+    border-width: 1px;
+    margin: 0 auto;
+    margin-top: 80px;
+    margin-bottom: -63px;
+    background-color: rgb(255, 255, 255);
+    font-family: 'Roboto', sans-serif;
+}
+.post-id {
+    display: block;
+    margin: 20px;
+    color:rgb(64, 64, 64);
+    transition: 0.3s;
+}
+.post-id:hover {
+    color: rgb(234, 176, 43);
+}
+.post-content {
+    margin: 20px;
+    width: 660px;
+}
+#reactions {
+    margin: 20px;
+    margin-top: 30px;
+    display: flex;
+}
+.likeicon {
+    width: 30px;
+    height: 30px;
+    background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+    opacity: 0.75;
+    transition: 0.2s;
+}
+.likeicon:hover {
+    opacity: 1;
+}
+.comments-link {
+    text-decoration: none;
+    padding: 10px;
+    color:rgb(64, 64, 64);
+    transition: 0.2s;
+}
+.comments-link:hover {
+    color: rgb(234, 176, 43);
+}
+#footer {
+    display: block;
+    background-color: rgb(255, 193, 47);
+    height: 100px;
+    margin-top: 180px;
+}
+#footertext {
+    width: 700px;
+    margin: 0 auto;
+    padding-top: 80px;
+    padding-left: 50px;
+    color: rgb(255, 255, 255);
+    font-family: 'Roboto', sans-serif;
+}
+
+.not-active-link {
+    cursor: default;
+    opacity: 0.33;
+}
+
+.not-active-link:hover {
+    opacity: 0.33;
+}
+
+a {
+    text-decoration: none;
+    color:rgb(64, 64, 64);
+}
+
+#warning {
+    color:rgb(239, 77, 93);
+    display: none;
+    font-family: 'Roboto', sans-serif;
+}
+
+#invisible{
+    display: none;
+}
