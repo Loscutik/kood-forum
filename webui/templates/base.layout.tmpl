@@ -43,13 +43,15 @@
             </form>
         </div>
         <div id="signupform">
-            <form action="/signup" method="post">
+            <form id="signup_form" action="/signup" method="post" >
                 <input type="email" id="email" name="email" placeholder="e-mail"><br><br> {{/*changed type to email*/}}
                 <input type="text" id="username" name="name" placeholder="username"><br><br>
                 <input type="password" id="password" class="password" name="password" placeholder="password"><br><br>
-                <input type="password" id="confirm_password" class="password" name="password" placeholder="confirm password" changed=checkPasswords()><span id="warning">passwords do not match</span><br>
+                <input type="password" id="confirm_password" class="password" name="password" placeholder="confirm password" >
+                <br>
+                <span id="warning">passwords do not match</span><br>
                 <input type="checkbox" onclick="ShowPassword()">Show Password <br><br>
-                <input type="submit" value="Sign up" class="signinupformbutton"><br><br><br>
+                <input type="button" id="signup_submit" value="Sign up" class="signinupformbutton"><br><br><br>
                 <label for="signupformbutton">Already have an account?</label><br><br>
                 <input type="button" class="signinupformbutton" name="signinformbutton" value="Sign in" onclick="signIn()">
             </form>
@@ -59,7 +61,7 @@
     <main>
     {{template "main" .}}
     </main>
-    
+    <script>checkForm()</script>
     <footer id="footer">
         <p id="footertext">Created with love in 2023</p>
     </footer>

@@ -1,0 +1,4 @@
+forbiden.html
+likes- post request from JS and JS change number of likes using a respond to the request
+compare passwords using JS
+backend: signup, signin - check fields - they must be filled

@@ -15,13 +15,13 @@
         <div id="reactions">
             {{if $loggedin}}
                 {{with .Post}}
-                    <button id="{{.ID}}-post_like" class="likeicon" name="post_like" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
-                    <button id="{{.ID}}-post_dislike" class="likeicon" name="post_dislike" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
+                    <button id="{{.ID}}-post-true" class="likeicon" name="post-true" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                    <button id="{{.ID}}-post-false" class="likeicon" name="post-false" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
                 {{end}}
             {{else}} 
                 {{with .Post}}
-                    <button id="{{.ID}}-post_like" class="likeicon not-active-link" name="post_like" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
-                    <button id="{{.ID}}-post_dislike" class="likeicon not-active-link" name="post_dislike" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></img></button>
+                    <button id="{{.ID}}-post-true" class="likeicon not-active-link" name="post-true" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                    <button id="{{.ID}}-post-false" class="likeicon not-active-link" name="post-false" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></img></button>
                 {{end}}
             {{end}}
         </div>
@@ -34,11 +34,11 @@
             </div>
             <div id="reactions">
                 {{if $loggedin}}
-                    <button id="{{.ID}}-comment_like" class="likeicon" name="comment_like" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
-                    <button id="{{.ID}}-comment_dislike" class="likeicon" name="comment_dislike" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
+                    <button id="{{.ID}}-comment-true" class="likeicon" name="comment-true" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                    <button id="{{.ID}}-comment-false" class="likeicon" name="comment-false" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
                 {{else}} 
-                    <button id="{{.ID}}-comment_like" class="likeicon not-active-link" name="comment_like" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
-                    <button id="{{.ID}}-comment_dislike" class="likeicon not-active-link" name="comment_dislike" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></img></button>
+                    <button id="{{.ID}}-comment-true" class="likeicon not-active-link" name="comment-true" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                    <button id="{{.ID}}-comment-false" class="likeicon not-active-link" name="comment-false" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></img></button>
                 {{end}}
             </div>
         </div>

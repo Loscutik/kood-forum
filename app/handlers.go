@@ -648,7 +648,7 @@ func (app *application) likingHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO set answer to javascript insted of redirect
+	// TODO set answer to javascript insted of redirect. In this case fromURL isn't needed
 	fromURL := r.PostFormValue(F_FROMURL) // TODO form this url with #id - id of what was liked
 
 	newLike, err := strconv.ParseBool(r.PostFormValue(F_LIKE))
@@ -677,7 +677,7 @@ func (app *application) likingHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// redirect to the fromURL
-	// TODO set answer to javascript insted of redirect
+	// TODO set answer to javascript insted of redirect. In this case it isn't needed
 	http.Redirect(w, r, fromURL, http.StatusSeeOther)
 }
 
