@@ -104,6 +104,47 @@ func TestLikes(t *testing.T) {
 	}
 }
 
+func TestGetLikes(t *testing.T) {
+	db, err := OpenDB("database.db")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
+	f := ForumModel{db}
+
+	fmt.Println("--get likes for post 2--")
+	likes, err := f.GetPostLikes(2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Printf("%v\n", likes)
+	
+	
+	fmt.Println("--get likes for post 3 by user 2--")
+	id,like, err := f.GetUsersPostLike(2,3)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Printf("id= %d, like=%v\n",id, like)
+	/*
+	fmt.Println("--get likes for post 1 by user 2 (no)--")
+	id,like, err = f.GetUsersPostLike(2,1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Printf("id= %d, like=%v\n",id, like)
+	*/
+	fmt.Println("--get likes for post 1 by user 3 (no)--")
+	id,like, err = f.GetUsersPostLike(3,1)
+	fmt.Printf("err=%v, type err - %T\n", err,err)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Printf("id= %d, like=%v\n",id, like)
+	
+}
+
 func (f *ForumModel) printLikes(table string) error {
 	q := `SELECT * FROM ` + table
 

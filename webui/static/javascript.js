@@ -25,59 +25,175 @@ function signUp() {
     document.getElementById("signinform").style.display = "none";
   
 }
-function checkForm(){
+
+function checkFormSignup(){ 
   const submitButton=document.querySelector("#signup_submit");
-  const password=document.getElementById("password");
+  const email=document.querySelector("#email") 
+  const name= document.querySelector("#name-up")
+  const password=document.getElementById("password-up");
   const confirmPassword=document.getElementById("confirm_password");
-  const warning=document.querySelector("#warning");
-  const form=document.querySelector("#signup_form");
+  const warning=document.querySelector("#warning-up");
 
   submitButton.addEventListener("click", (event) => {
-if (document.querySelector("#email").value==null ||document.querySelector("#username").value==null ||password.value==null ||confirmPassword.value==null|| document.querySelector("#email").value=="null" ||document.querySelector("#username").value=="null" ||password.value=="null" ||confirmPassword.value==""){
+    if (email.value==null ||name.value==null ||password.value==null ||confirmPassword.value==null|| email.value=="" || name.value=="" ||password.value=="" ||confirmPassword.value==""){
       warning.innerHTML="fill all fields";
       warning.style.display="block";
     }else if (password.value!=confirmPassword.value){
       warning.innerHTML="passwords do not match";
       warning.style.display="block";
     }else{
-      form.submit();
+      // send data by post
+      // form data for post
+      let data = { 
+        email: email.value,
+        name: name.value,
+        password: password.value,
+      };
+      
+      // create a request with form-data
+      const urlEncodedDataPairs = [];
+      for (const [name, value] of Object.entries(data)) {
+        urlEncodedDataPairs.push(`${encodeURIComponent(name)}=${encodeURIComponent(value)}`);
+      }
+    
+      // Combine the pairs into a single string and replace all %-encoded spaces to
+      // the '+' character; matches the behavior of browser form submissions.
+      const urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
+      const headers = new Headers();
+      headers.append('Content-Type', 'application/x-www-form-urlencoded');
+
+      fetch("/signup", {
+      method: "POST",
+      headers: headers,
+      credentials: "same-origin",
+      redirect: "follow", 
+      body: urlEncodedData
+      }).then((res) => {
+        if (res.status==204){
+          console.log ("red=",res.headers.get("Location"));
+          window.location.href =res.headers.get("Location");
+          return ""
+        }
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        
+        return res.text(); 
+      })
+      .then((text) =>{
+        if (text.length!=0){
+          warning.innerHTML=text;
+          warning.style.display="block";
+        }
+      });
     }
   });
+}
+
+function checkFormSignin(){
+  const submitButton=document.querySelector("#signin_submit");
+  const name= document.querySelector("#name-in")
+  const password=document.getElementById("password-in");
+  const warning=document.querySelector("#warning-in");
+
+  submitButton.addEventListener("click", (event) => {
+    if (name.value==null ||password.value==null || name.value=="" ||password.value=="" ){
+      warning.innerHTML="fill all fields";
+      warning.style.display="block";
+    }else{
+      // send data by post
+      // form data for post
+      let data = { 
+        name: name.value,
+        password: password.value,
+      };
+      
+      // create a request with form-data
+      const urlEncodedDataPairs = [];
+      for (const [name, value] of Object.entries(data)) {
+        urlEncodedDataPairs.push(`${encodeURIComponent(name)}=${encodeURIComponent(value)}`);
+      }
+    
+      // Combine the pairs into a single string and replace all %-encoded spaces to
+      // the '+' character; matches the behavior of browser form submissions.
+      const urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
+      const headers = new Headers();
+      headers.append('Content-Type', 'application/x-www-form-urlencoded');
+
+      fetch("/login", {
+      method: "POST",
+      headers: headers,
+      credentials: "same-origin",
+      redirect: "follow", 
+      body: urlEncodedData
+      }).then((res) => {
+        if (res.status==204){
+          console.log ("red=",res.headers.get("Location"));
+          window.location.href =res.headers.get("Location");
+          return ""
+        }
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        
+        return res.text(); 
+      })
+      .then((text) =>{
+        if (text.length!=0){
+          warning.innerHTML=text;
+          warning.style.display="block";
+        }
+      });
+    }
+  });
+}
+
+function changingFormSignup() {
+  const form=document.querySelector("#signup_form");
+  form.addEventListener("change", (event) =>{
+    document.getElementById("warning-up").style.display="none";
+  })
+}
+
+function changingFormSignin() {
+  const form=document.querySelector("#signin_form");
+  form.addEventListener("change", (event) =>{
+    document.getElementById("warning-in").style.display="none";
+  })
 }
 
 function handleLike(id){
   // needed : "messageType"("posts_likes", "comments_likes") "messageID"(#)  "like"(bool) 
   const clickedElement = document.getElementById(id);
-  // parse id
-  // form data for post 
-  // form option for fetch
-  // feth
-  // handle the responce - change like numbers
+  var messageType = clickedElement.getAttribute("messageType");
+  var messageID = clickedElement.getAttribute("messageID");
+  const labelLike = document.getElementById(messageID+"-"+messageType+"-true-n");
+  const labelDislike = document.getElementById(messageID+"-"+messageType+"-false-n");
+  // create a request with JSON data
+  let data = {
+    messageType: messageType,
+    messageID: messageID,
+    like: clickedElement.getAttribute("like"),
+  };
+  const headers = new Headers();
+  headers.append('Content-Type', 'application/json');
 
-const myHeaders = new Headers();
-myHeaders.append("Accept", "image/jpeg");
-
-const myInit = {
-  method: "GET",
-  headers: myHeaders,
-  mode: "cors",
-  cache: "default",
-};
-
-const myRequest = new Request("flowers.jpg");
-fetch(myRequest,myInit)
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+  fetch("/liking", {
+  method: "POST",
+  headers: headers, 
+  credentials: "same-origin",
+  redirect: "follow", 
+  body: JSON.stringify(data)
+  }).then(res => {
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
     }
-
-    return response.blob();
+    return res.json();
   })
-  .then((response) => {
-    myImage.src = URL.createObjectURL(response);
+  .then(likes =>{
+    labelLike.innerHTML=likes["like"];
+    labelDislike.innerHTML=likes["dislike"];
   });
-
-
 }
 
 function darkness() {

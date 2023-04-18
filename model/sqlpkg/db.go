@@ -39,7 +39,6 @@ func handleErrAndCloseDB(db *sql.DB, operation string, err error) error {
 	return fmt.Errorf("DB was closed cause %s failed: %v", operation, err)
 }
 
-// TODO change name of categories
 func CreateDB(name, admName, admEmail, admPass string) (*sql.DB, error) {
 	// init pull (not connection)
 	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s?_auth&_auth_user=admin&_auth_pass=adminpass", name))
@@ -191,18 +190,11 @@ func CreateDB(name, admName, admEmail, admPass string) (*sql.DB, error) {
 /*
 checks if the value exists in the table's field and returns the number of rows where the value was found
 */
-func (f *ForumModel) checkExisting(table, field, value string) (int, error) {
+func (f *ForumModel) checkExisting(table, field, value string) error {
 	q := `SELECT ` + field + ` FROM ` + table + ` WHERE ` + field + ` = ?`
-	res, err := f.DB.Exec(q, value)
-	if err != nil {
-		return 0, err
-	}
-
-	n, err := res.RowsAffected()
-	if err != nil {
-		return 0, err
-	}
-	return int(n), nil
+	row := f.DB.QueryRow(q, value)
+	var tmp string
+	return row.Scan(&tmp)
 }
 
 /*

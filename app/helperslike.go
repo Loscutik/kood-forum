@@ -21,8 +21,8 @@ type commentLikeDB struct {
 }
 type liker interface {
 	GetLike() error
-	InsertLike() error
-	UpdateLike() error
+	InsertLike(bool) error
+	UpdateLike(bool) error
 	DeleteLike() error
 	CompareLike(bool) bool
 }
@@ -33,13 +33,15 @@ func (pl *postLikeDB) GetLike() error {
 	return err
 }
 
-func (pl *postLikeDB) InsertLike() error {
+func (pl *postLikeDB) InsertLike(like bool) error {
 	var err error
+	pl.like=like
 	pl.id, err = pl.dataSource.InsertPostLike(pl.userID, pl.messageID, pl.like)
 	return err
 }
 
-func (pl *postLikeDB) UpdateLike() error {
+func (pl *postLikeDB) UpdateLike(like bool) error {
+	pl.like=like
 	return pl.dataSource.UpdatePostLike(pl.id, pl.like)
 }
 
@@ -57,13 +59,15 @@ func (cl *commentLikeDB) GetLike() error {
 	return err
 }
 
-func (cl *commentLikeDB) InsertLike() error {
+func (cl *commentLikeDB) InsertLike(like bool) error {
 	var err error
+	cl.like=like
 	cl.id, err = cl.dataSource.InsertCommentLike(cl.userID, cl.messageID, cl.like)
 	return err
 }
 
-func (cl *commentLikeDB) UpdateLike() error {
+func (cl *commentLikeDB) UpdateLike(like bool) error {
+	cl.like=like
 	return cl.dataSource.UpdateCommentLike(cl.id, cl.like)
 }
 
@@ -80,7 +84,7 @@ func setLike(liker liker, newLike bool) error {
 	if err != nil {
 		// if there is no like/dislike made by the user, add a new one
 		if errors.Is(err, model.ErrNoRecord) {
-			err := liker.InsertLike()
+			err := liker.InsertLike(newLike)
 			if err != nil {
 				return fmt.Errorf("insert data to DB failed: %s", err)
 			}
@@ -92,11 +96,11 @@ func setLike(liker liker, newLike bool) error {
 			err := liker.DeleteLike()
 			if err != nil {
 				return fmt.Errorf("deleting data from DB failed: %s", err)
-			} else {
-				err := liker.UpdateLike()
-				if err != nil {
-					return fmt.Errorf("updating data in DB failed: %s", err)
-				}
+			}
+		} else {
+			err := liker.UpdateLike(newLike)
+			if err != nil {
+				return fmt.Errorf("updating data in DB failed: %s", err)
 			}
 		}
 	}

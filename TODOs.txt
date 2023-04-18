@@ -1,4 +1,7 @@
 forbiden.html
-likes- post request from JS and JS change number of likes using a respond to the request
+creating post - add tags
 compare passwords using JS
 backend: signup, signin - check fields - they must be filled
+add to html the name of post(comments)'s author and the crwating date
+logout button
+a page for user information

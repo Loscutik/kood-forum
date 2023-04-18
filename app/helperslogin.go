@@ -68,7 +68,7 @@ func (app *application) checkLoggedin(w http.ResponseWriter, r *http.Request) (*
 		if err == model.ErrNoRecord {
 			return session, nil
 		}
-		app.ServerError(w, r, "getting a user by tSID failed", err)
+		app.ServerError(w, r, "getting a user by SID failed", err)
 		return nil, err
 	}
 	session.User = user

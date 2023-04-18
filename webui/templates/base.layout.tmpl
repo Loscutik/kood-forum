@@ -20,7 +20,7 @@
             <div id="headerbuttons"><a href="/addpost" id="createpost">Create post</a>
             <div id="user">
                 <img src="https://cdn-icons-png.flaticon.com/512/1144/1144760.png" id="avatar" class="likeicon"></img>
-                <span id="username">Username</span>
+                <span id="username">{{.Session.User.Name}}</span>
             </div>
         {{else}}
             <p id="signinup"><button class="signin" onclick="signUp()">Sign up</button> / <button class="signin" onclick="signIn()">Sign in</button></p></div>
@@ -33,23 +33,24 @@
     {{else}}
         <div id="darkness" onclick="darkness()"></div>
         <div id="signinform">
-            <form action="/login" method="post">
-                <input type="text" id="username" name="name" placeholder="username"><br><br>
-                <input type="password" class="password" name="password" placeholder="password"><br>
+            <form id="signin_form" >
+                <input type="text" id="name-in" name="name" placeholder="username"><br><br>
+                <input type="password" id="password-in" class="password" name="password" placeholder="password"><br>
+                <span id="warning-in" class="warning">passwords do not match</span><br>
                 <input type="checkbox" onclick="ShowPassword()">Show Password<br><br>
-                <input type="submit" value="Sign in" class="signinupformbutton"><br><br><br>
+                <input type="button"  id="signin_submit" value="Sign in" class="signinupformbutton"><br><br><br>
                 <label for="signupformbutton">Don't have an account?</label><br><br>
                 <input type="button" class="signinupformbutton" name="signupformbutton" value="Sign up" onclick="signUp()">
             </form>
         </div>
         <div id="signupform">
-            <form id="signup_form" action="/signup" method="post" >
+            <form id="signup_form" >
                 <input type="email" id="email" name="email" placeholder="e-mail"><br><br> {{/*changed type to email*/}}
-                <input type="text" id="username" name="name" placeholder="username"><br><br>
-                <input type="password" id="password" class="password" name="password" placeholder="password"><br><br>
+                <input type="text" id="name-up" name="name" placeholder="username"><br><br>
+                <input type="password" id="password-up" class="password" name="password" placeholder="password"><br><br>
                 <input type="password" id="confirm_password" class="password" name="password" placeholder="confirm password" >
                 <br>
-                <span id="warning">passwords do not match</span><br>
+                <span id="warning-up"  class="warning">passwords do not match</span><br>
                 <input type="checkbox" onclick="ShowPassword()">Show Password <br><br>
                 <input type="button" id="signup_submit" value="Sign up" class="signinupformbutton"><br><br><br>
                 <label for="signupformbutton">Already have an account?</label><br><br>
@@ -61,7 +62,10 @@
     <main>
     {{template "main" .}}
     </main>
-    <script>checkForm()</script>
+    <script>changingFormSignup()</script>
+    <script>changingFormSignin()</script>
+    <script>checkFormSignup()</script>
+    <script>checkFormSignin()</script>
     <footer id="footer">
         <p id="footertext">Created with love in 2023</p>
     </footer>

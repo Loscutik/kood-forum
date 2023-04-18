@@ -15,13 +15,13 @@
         <div id="reactions">
             {{if $loggedin}}
                 {{with .Post}}
-                    <button id="{{.ID}}-post-true" class="likeicon" name="post-true" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
-                    <button id="{{.ID}}-post-false" class="likeicon" name="post-false" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
+                    <span id="{{.ID}}-posts_likes-true-n">{{index .Message.Likes 0}}</span><button id="{{.ID}}-posts_likes-true" messageID="{{.ID}}" messageType="posts_likes" like="true" class="likeicon" name="post-true" onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                    <span id="{{.ID}}-posts_likes-false-n">{{index .Message.Likes 1}}</span><button id="{{.ID}}-posts_likes-false" messageID="{{.ID}}" messageType="posts_likes" like="false" class="likeicon" name="post-false" onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
                 {{end}}
             {{else}} 
                 {{with .Post}}
-                    <button id="{{.ID}}-post-true" class="likeicon not-active-link" name="post-true" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
-                    <button id="{{.ID}}-post-false" class="likeicon not-active-link" name="post-false" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></img></button>
+                    <span id="{{.ID}}-posts_likes-true-n">{{index .Message.Likes 0}}</span><button id="{{.ID}}-posts_likes-true" class="likeicon not-active-link" name="post-true"><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                    <span id="{{.ID}}-posts_likes-false-n">{{index .Message.Likes 1}}</span><button id="{{.ID}}-posts_likes-false" class="likeicon not-active-link" name="post-false"><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></img></button>
                 {{end}}
             {{end}}
         </div>
@@ -34,11 +34,11 @@
             </div>
             <div id="reactions">
                 {{if $loggedin}}
-                    <button id="{{.ID}}-comment-true" class="likeicon" name="comment-true" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
-                    <button id="{{.ID}}-comment-false" class="likeicon" name="comment-false" value={{.ID}}><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
+                    <span id="{{.ID}}-comments_likes-true-n">{{index .Message.Likes 0}}</span><button id="{{.ID}}-comments_likes-true" messageID="{{.ID}}" messageType="comments_likes" like="true" class="likeicon" name="comment-true"  onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                    <span id="{{.ID}}-comments_likes-false-n">{{index .Message.Likes 1}}</span><button id="{{.ID}}-comments_likes-false" messageID="{{.ID}}" messageType="comments_likes" like="false" class="likeicon" name="comment-false"  onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
                 {{else}} 
-                    <button id="{{.ID}}-comment-true" class="likeicon not-active-link" name="comment-true" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
-                    <button id="{{.ID}}-comment-false" class="likeicon not-active-link" name="comment-false" value={{.ID}}><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></img></button>
+                    <span id="{{.ID}}-comments_likes-true-n">{{index .Message.Likes 0}}</span><button id="{{.ID}}-comments_likes-true" class="likeicon not-active-link" name="comment-true"><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                    <span id="{{.ID}}-comments_likes-false-n">{{index .Message.Likes 1}}</span><button id="{{.ID}}-comments_likes-false" class="likeicon not-active-link" name="comment-false"><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></img></button>
                 {{end}}
             </div>
         </div>

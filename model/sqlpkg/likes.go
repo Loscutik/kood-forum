@@ -7,10 +7,28 @@ import (
 	"forum/model"
 )
 
-func (f *ForumModel) AddPostLike(userID, postID int, like bool) error {
-	// check if there is a like from this user
-	// change the like or add the new one
-	return nil
+func (f *ForumModel) GetPostLikes(messageID int) ([]int, error) {
+	return f.GetLikes(model.POSTS_LIKES, messageID)
+}
+
+func (f *ForumModel) GetCommentLikes(messageID int) ([]int, error) {
+	return f.GetLikes(model.COMMENTS_LIKES, messageID)
+}
+
+func (f *ForumModel) GetLikes(tableName string, messageID int) ([]int, error) {
+	likes :=[]int{0,0}
+	q := `SELECT  count(CASE WHEN like THEN TRUE END), count(CASE WHEN NOT like THEN TRUE END) FROM ` + tableName + ` WHERE messageID=? `
+	row := f.DB.QueryRow(q, messageID)
+
+	err := row.Scan(&likes[model.LIKE],&likes[model.DISLIKE])
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil,  model.ErrNoRecord
+		}
+		return nil, err
+	}
+
+	return likes, nil
 }
 
 func (f *ForumModel) GetUsersPostLike(userID, messageID int) (int, bool, error) {

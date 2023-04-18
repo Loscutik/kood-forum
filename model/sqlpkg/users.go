@@ -46,8 +46,8 @@ func (f *ForumModel) GetUserByID(id int) (*model.User, error) {
 	user := &model.User{}
 	var ses sql.NullString
 	row := f.DB.QueryRow(q, id)
- 	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.DateCreate, &ses, &user.ExpirySession)
-	user.Session=ses.String
+	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.DateCreate, &ses, &user.ExpirySession)
+	user.Session = ses.String
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, model.ErrNoRecord
@@ -67,7 +67,7 @@ func (f *ForumModel) GetUserByName(name string) (*model.User, error) {
 	var ses sql.NullString
 	row := f.DB.QueryRow(q, name)
 	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.DateCreate, &ses, &user.ExpirySession)
-	user.Session=ses.String
+	user.Session = ses.String
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, model.ErrNoRecord
@@ -88,7 +88,7 @@ func (f *ForumModel) GetUserByEmail(email string) (*model.User, error) {
 	var ses sql.NullString
 	row := f.DB.QueryRow(q, email)
 	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.DateCreate, &ses, &user.ExpirySession)
-	user.Session=ses.String
+	user.Session = ses.String
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, model.ErrNoRecord
@@ -109,7 +109,7 @@ func (f *ForumModel) GetUserBySession(session string) (*model.User, error) {
 	var ses sql.NullString
 	row := f.DB.QueryRow(q, session)
 	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.DateCreate, &ses, &user.ExpirySession)
-	user.Session=ses.String
+	user.Session = ses.String
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, model.ErrNoRecord
@@ -151,7 +151,7 @@ func (f *ForumModel) AddUsersSession(id int, session string, expirySession time.
 }
 
 /*
-deletes the user's session 
+deletes the user's session
 */
 func (f *ForumModel) DeleteUsersSession(id int) error {
 	q := `UPDATE users SET session=NULL, expirySession=NULL WHERE id=?`
@@ -167,16 +167,10 @@ func (f *ForumModel) DeleteUsersSession(id int) error {
 check if a user with the given name exists,  returns nil only if there is exactly one user
 */
 func (f *ForumModel) CheckUserByName(name string) error {
-	n, err := f.checkExisting("users", "name", name)
-	if err == nil {
-		if n == 0 {
-			return model.ErrNoRecord
-		}
-		if n > 1 {
-			return model.ErrTooManyRecords
-		}
+	err := f.checkExisting("users", "name", name)
+	if errors.Is(err, sql.ErrNoRows) {
+		return model.ErrNoRecord
 	}
-
 	return err
 }
 
@@ -184,16 +178,10 @@ func (f *ForumModel) CheckUserByName(name string) error {
 check if a user with the given email exists, returns nil only if there is exactly one user
 */
 func (f *ForumModel) CheckUserByEmail(email string) error {
-	n, err := f.checkExisting("users", "email", email)
-	if err == nil {
-		if n == 0 {
-			return model.ErrNoRecord
-		}
-		if n > 1 {
-			return model.ErrTooManyRecords
-		}
+	err := f.checkExisting("users", "email", email)
+	if errors.Is(err, sql.ErrNoRows) {
+		return model.ErrNoRecord
 	}
-
 	return err
 }
 
@@ -201,19 +189,17 @@ func (f *ForumModel) CheckUserByEmail(email string) error {
 adds a session to the user with the given ID
 */
 func (f *ForumModel) AddUser(name, email string, password []byte, dateCreate time.Time) (int, error) {
-	id, err:=f.InsertUser(name, email, password, dateCreate)
-	if err !=nil {
-		errUnique:=f.CheckUserByName(name)
-		if errUnique==nil{
+	id, err := f.InsertUser(name, email, password, dateCreate)
+	if err != nil {
+		errUnique := f.CheckUserByName(name)
+		if errUnique == nil {
 			return 0, model.ErrUniqueUserName
 		}
-		errUnique=f.CheckUserByEmail(email)
-		if errUnique==nil{
+		errUnique = f.CheckUserByEmail(email)
+		if errUnique == nil {
 			return 0, model.ErrUniqueUserEmail
 		}
 	}
-	
+
 	return id, nil
 }
-
-

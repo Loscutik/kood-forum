@@ -1,9 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -66,7 +69,7 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 			categoryID = append(categoryID, id)
 		}
 	}
-	
+
 	filter := &model.Filter{
 		AuthorID:      0,
 		CategoryID:    categoryID,
@@ -103,102 +106,101 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 /*
-the signup page.  Route: /signup. Methods: GET, POST. Template: signup
+the signup page.  Route: /signup. Methods: POST. Template: signup
 */
 func (app *application) signupPageHandler(w http.ResponseWriter, r *http.Request) {
+	// only POST method is allowed
+	if r.Method != http.MethodPost {
+		app.MethodNotAllowed(w, r, http.MethodPost)
+		return
+	}
+
 	ses, err := app.checkLoggedin(w, r)
 	if err != nil {
 		// checkLoggedin has already written error status to w
 		return
 	}
 	if ses.LoginStatus == loggedin {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		w.Header().Add("Location", "/")		
+		w.WriteHeader(204)
 		return
 	}
 	if ses.LoginStatus == experied {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		w.Header().Add("Location", "/login")		
+		w.WriteHeader(204)
 		return
 	}
 
-	// TODO redo it in the way that the handler will respond to a javascript function, not execute templates
 	// continue only if it's notloggedin
-	switch r.Method {
-	case http.MethodGet:
-		// respond with the empty form
-		app.executeTemplate(w, r, "signup", nil)
-	case http.MethodPost:
-		// try to add a user
-		// get data from a form
-		err := r.ParseForm()
+
+	// try to add a user
+	// get data from a form
+	err = r.ParseForm()
+	if err != nil {
+		app.ServerError(w, r, "parsing form error", err)
+		return
+	}
+
+	name := r.FormValue(F_NAME)
+	email := r.PostFormValue(F_EMAIL)
+	password := r.PostFormValue(F_PASSWORD)
+	if name == "" || email == "" || password == "" {
+		app.ClientError(w, r, http.StatusBadRequest, "empty string in credential data")
+		return
+	}
+
+	// check email
+	if !regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`).Match([]byte(email)){
+		w.Write([]byte("wrong email"))
+		return
+	}
+
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), 8)
+	if err != nil {
+		app.ServerError(w, r, "password crypting failed", err)
+		return
+	}
+
+	// add a user  to DB
+	id, err := app.forumData.AddUser(name, email, hashPassword, time.Now())
+	if err == nil { // the user is added - redirect to success page
+		tSID, err := uuid.NewV4()
 		if err != nil {
-			app.ServerError(w, r, "parsing form error", err)
+			app.ServerError(w, r, "UUID creating failed", err)
+			return
+		}
+		expiresAt := time.Now().Add(60 * time.Second)
+
+		// set tSID
+		http.SetCookie(w, &http.Cookie{
+			Name:    "tSID",
+			Value:   tSID.String(),
+			Expires: expiresAt,
+		})
+		err = app.forumData.AddUsersSession(id, tSID.String(), expiresAt)
+		if err != nil {
+			app.ServerError(w, r, "adding session failed", err)
 			return
 		}
 
-		name := r.PostFormValue(F_NAME)
-		// TODO check correct email & compare passwords in javascript
-		email := r.PostFormValue(F_EMAIL)
-		password := r.PostFormValue(F_PASSWORD)
-		hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), 8)
-		if err != nil {
-			app.ServerError(w, r, "password crypting failed", err)
+		// responde to JS, with status 204 it will link to /signup/success
+		w.Header().Add("Location", "/signup/success")		
+		w.WriteHeader(204)
+
+	} else { // adding is failed - error mesage and respond with the filled form
+		var message string
+		switch err {
+		case model.ErrUniqueUserName:
+			message = "the name already exists"
+		case model.ErrUniqueUserEmail:
+			message = "the email already exists"
+		default:
+			app.ServerError(w, r, "adding the user failed", err)
 			return
 		}
 
-		// add a user  to DB
-		fmt.Printf("name=%s, email= %s, hashPassword = %s\n",name, email, hashPassword)
-		id, err := app.forumData.AddUser(name, email, hashPassword, time.Now())
-		if err == nil { // the user is added - redirect to success page
-			fmt.Printf("added, id=%d, err = %v",id,err)
-			tSID, err := uuid.NewV4()
-			if err != nil {
-				app.ServerError(w, r, "UUID creating failed", err)
-				return
-			}
-			expiresAt := time.Now().Add(60 * time.Second)
-
-			// set tSID
-			http.SetCookie(w, &http.Cookie{
-				Name:    "tSID",
-				Value:   tSID.String(),
-				Expires: expiresAt,
-			})
-			err = app.forumData.AddUsersSession(id, tSID.String(), expiresAt)
-			if err != nil {
-				app.ServerError(w, r, "adding session failed", err)
-				return
-			}
-			// go to success page
-			http.Redirect(w, r, "/signup/success", http.StatusSeeOther)
-
-		} else { // adding is failed - error mesage and respond with the filled form
-			var message string
-			switch err {
-			case model.ErrUniqueUserName:
-				message = "the name already exists"
-			case model.ErrUniqueUserEmail:
-				message = "the email already exists"
-			default:
-				app.ServerError(w, r, "adding a user failed", err)
-				return
-			}
-
-			// create a page
-			output := &struct {
-				Session    *session
-				Name, Email, Password, Message string
-			}{
-				Session: NotloggedinSession(),
-				Name:     name,
-				Email:    email,
-				Password: password,
-				Message:  message,
-			}
-			app.executeTemplate(w, r, "signup", output)
-		}
-
-	default:
-		app.MethodNotAllowed(w, r, http.MethodGet+", "+http.MethodPost)
+		// write responce to JavsScript function
+		w.Write([]byte(message))
 	}
 }
 
@@ -255,107 +257,95 @@ func (app *application) signupSuccessPageHandler(w http.ResponseWriter, r *http.
 	})
 	// create a page
 	output := &struct {
-		Session    *session
-		Name string
+		Session *session
+		Name    string
 	}{
 		Session: NotloggedinSession(),
-		Name:     user.Name,
+		Name:    user.Name,
 	}
 	app.executeTemplate(w, r, "successreg", output)
 }
 
 /*
-the login page. Route: /login. Methods: GET, POST. Template: signin
+the login page. Route: /login. Methods: POST. Template: signin
 */
 func (app *application) signinPageHandler(w http.ResponseWriter, r *http.Request) {
+	// only POST method is allowed
+	if r.Method != http.MethodPost {
+		app.MethodNotAllowed(w, r, http.MethodPost)
+		return
+	}
+
 	ses, err := app.checkLoggedin(w, r)
 	if err != nil {
 		// checkLoggedin has already written error status to w
 		return
 	}
 	if ses.IsLoggedin() {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		w.Header().Add("Location", "/")		
+		w.WriteHeader(204)
 		return
 	}
 
-	// TODO redo it in the way that the handler will respond to a javascript function, not execute templates
 	// continue if it's neither notloggedin nor expiried
-	switch r.Method {
-	case http.MethodGet:
-		// respond with the empty form
-		app.executeTemplate(w, r, "signin", nil)
-	case http.MethodPost:
-		// try to add a user
-		err := r.ParseForm()
+	// try to add a user
+	err = r.ParseForm()
+	if err != nil {
+		app.ServerError(w, r, "parsing form error", err)
+		return
+	}
+
+	name := r.PostFormValue(F_NAME)
+	password := r.PostFormValue(F_PASSWORD)
+	if name == "" || password == "" {
+		app.ClientError(w, r, http.StatusBadRequest, "empty string in credential data")
+		return
+	}
+	user, err := app.forumData.GetUserByName(name)
+	if err != nil {
+		if errors.Is(err, model.ErrNoRecord) { // the user doesn't exist
+			// write a message for JS
+			w.Write([]byte("wrong login"))
+			return
+		}
+		// any other errors:
+		app.ServerError(w, r, "getting user for signin failed", err)
+		return
+	}
+	// check user's password
+	expectedHashPassword := user.Password
+	if len(expectedHashPassword) == 0 {
+		app.ServerError(w, r, "wrong data in the DB", fmt.Errorf("user's (%s) password is empty", name))
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword(expectedHashPassword, []byte(password))
+	if err == nil { // the password is true - create SID & redirect to the home page
+		SID, err := uuid.NewV4()
 		if err != nil {
-			app.ServerError(w, r, "parsing form error", err)
+			app.ServerError(w, r, "UUID creating failed", err)
 			return
 		}
+		expiresAt := time.Now().Add(EXP_SESSION * time.Second)
 
-		name := r.PostFormValue(F_NAME)
-		password := r.PostFormValue(F_PASSWORD)
-		user, err := app.forumData.GetUserByName(name)
+		http.SetCookie(w, &http.Cookie{
+			Name:    "SID",
+			Value:   SID.String(),
+			Expires: expiresAt,
+		})
+		err = app.forumData.AddUsersSession(user.ID, SID.String(), expiresAt)
 		if err != nil {
-			if errors.Is(err, model.ErrNoRecord) { // the user doesn't exist
-				// create a page
-				output := &struct {
-					Session    *session
-					Name, Message string
-				}{
-					Session: NotloggedinSession(),
-					Name:    name,
-					Message: "wrong login",
-				}
-				app.executeTemplate(w, r, "signin", output)
-				return
-			}
-			// any other errors:
-			app.ServerError(w, r, "getting user for signin failed", err)
-			return
-		}
-		// check user's password
-		expectedHashPassword := user.Password
-		if len(expectedHashPassword) == 0 {
-			app.ServerError(w, r, "wrong data in the DB", fmt.Errorf("user's (%s) password is empty", name))
+			app.ServerError(w, r, "adding session failed", err)
 			return
 		}
 
-		err = bcrypt.CompareHashAndPassword(expectedHashPassword, []byte(password))
-		if err == nil { // the password is true - create SID & redirect to the home page
-			SID, err := uuid.NewV4()
-			if err != nil {
-				app.ServerError(w, r, "UUID creating failed", err)
-				return
-			}
-			expiresAt := time.Now().Add(EXP_SESSION * time.Second)
+		// responde to JS, with status 204 it will link to the home page
+		w.Header().Add("Location", "/")		
+		w.WriteHeader(204)
 
-			http.SetCookie(w, &http.Cookie{
-				Name:    "SID",
-				Value:   SID.String(),
-				Expires: expiresAt,
-			})
-			err = app.forumData.AddUsersSession(user.ID, SID.String(), expiresAt)
-			if err != nil {
-				app.ServerError(w, r, "adding session failed", err)
-				return
-			}
-			http.Redirect(w, r, "/", http.StatusSeeOther)
-
-		} else { // the password is wrong - error mesage and respond with the filled form
-			// create a page
-			output := &struct {
-				Session    *session
-				Name, Message string
-			}{
-				Session: NotloggedinSession(),
-				Name:    name,
-				Message: "wrong password",
-			}
-			app.executeTemplate(w, r, "signin", output)
-		}
-
-	default:
-		app.MethodNotAllowed(w, r, http.MethodGet+", "+http.MethodPost)
+	} else { // the password is wrong - error mesage and respond with the filled form
+		// write a message for JS
+		w.Write([]byte("wrong password"))
 	}
 }
 
@@ -610,7 +600,7 @@ func (app *application) postCreatorHandler(w http.ResponseWriter, r *http.Reques
 the liking handler. Route: /liking. Methods: POST. Template: -
 */
 func (app *application) likingHandler(w http.ResponseWriter, r *http.Request) {
-	// only PUT method is allowed
+	// only POST method is allowed
 	if r.Method != http.MethodPost {
 		app.MethodNotAllowed(w, r, http.MethodPost)
 		return
@@ -619,7 +609,7 @@ func (app *application) likingHandler(w http.ResponseWriter, r *http.Request) {
 	// get a session
 	ses, err := app.checkLoggedin(w, r)
 	if err != nil {
-		// checkLoggedin has already written error status to w
+		// checkLoggedin has already written an error status to w
 		return
 	}
 
@@ -635,30 +625,37 @@ func (app *application) likingHandler(w http.ResponseWriter, r *http.Request) {
 
 	// continue for the loggedin status only
 	// get data from the request
-	err = r.ParseForm()
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		app.ServerError(w, r, "parsing form error", err)
+		app.ClientError(w, r, http.StatusBadRequest, fmt.Sprintf("error during reading the liking request: %s", err))
 		return
 	}
 
-	messageType := r.PostFormValue("messageType")
-	messageID, err := strconv.Atoi(r.PostFormValue(F_MESSAGEID))
+	var likeData struct {
+		MessageType string
+		MessageID   string
+		Like        string
+	}
+	err = json.Unmarshal(body, &likeData)
+	if err != nil {
+		app.ClientError(w, r, http.StatusBadRequest, fmt.Sprintf("error during unmarshal the data from the liking request: %s", err))
+		return
+	}
+
+	// convert data from string
+	messageID, err := strconv.Atoi(likeData.MessageID)
 	if err != nil || messageID < 1 {
-		app.ClientError(w, r, http.StatusBadRequest, fmt.Sprintf("wrong message id: %s, err: %s", r.PostFormValue(F_MESSAGEID), err))
+		app.ClientError(w, r, http.StatusBadRequest, fmt.Sprintf("wrong message id: %s, err: %s", likeData.MessageID, err))
 		return
 	}
-
-	// TODO set answer to javascript insted of redirect. In this case fromURL isn't needed
-	fromURL := r.PostFormValue(F_FROMURL) // TODO form this url with #id - id of what was liked
-
-	newLike, err := strconv.ParseBool(r.PostFormValue(F_LIKE))
+	newLike, err := strconv.ParseBool(likeData.Like)
 	if err != nil {
-		app.ClientError(w, r, http.StatusBadRequest, fmt.Sprintf("wrong value of the flag 'like': %s, err: %s", r.PostFormValue(F_LIKE), err))
+		app.ClientError(w, r, http.StatusBadRequest, fmt.Sprintf("wrong value of the flag 'like': %s, err: %s", likeData.Like, err))
 		return
 	}
 
-	// add or change like into the DB
-	switch messageType {
+	// add or change the like into the DB
+	switch likeData.MessageType {
 	case model.POSTS_LIKES:
 		err = setLike(&postLikeDB{dataSource: app.forumData, userID: ses.User.ID, messageID: messageID}, newLike)
 		if err != nil {
@@ -672,13 +669,18 @@ func (app *application) likingHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	default:
-		app.ClientError(w, r, http.StatusBadRequest, fmt.Sprintf("wrong type of a message: %s, err: %s", messageType, err))
+		app.ClientError(w, r, http.StatusBadRequest, fmt.Sprintf("wrong type of a message: %s, err: %s", likeData.MessageType, err))
 		return
 	}
 
-	// redirect to the fromURL
-	// TODO set answer to javascript insted of redirect. In this case it isn't needed
-	http.Redirect(w, r, fromURL, http.StatusSeeOther)
+	// get the new number of likes/dislikes
+	likes, err := app.forumData.GetLikes(likeData.MessageType, messageID)
+	if err != nil {
+		app.ServerError(w, r, "getting likes faild", err)
+		return
+	}
+	// write responce in JSON
+	w.Write([]byte(fmt.Sprintf(`{"like": "%d", "dislike": "%d"}`, likes[model.LIKE], likes[model.DISLIKE])))
 }
 
 /*

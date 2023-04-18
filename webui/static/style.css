@@ -274,7 +274,7 @@ a {
     color:rgb(64, 64, 64);
 }
 
-#warning {
+.warning {
     color:rgb(239, 77, 93);
     display: none;
     font-family: 'Roboto', sans-serif;

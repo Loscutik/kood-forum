@@ -1,0 +1,4 @@
+INFO:  2023/04/13 13:32:38 main.go:53: DB has created in
+INFO:  2023/04/13 13:32:38 main.go:81: Starting server at port 8080
+INFO:  2023/04/13 13:39:25 main.go:81: Starting server at port 8080
+INFO:  2023/04/13 13:41:44 main.go:81: Starting server at port 8080
