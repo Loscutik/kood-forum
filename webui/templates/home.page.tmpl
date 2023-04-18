@@ -11,7 +11,7 @@
             <form id="fform">
                 <p>Select a category:</p>
                 {{range .Categories}}
-                    <input type="checkbox" id = {{.ID}} class="categories" name="category"  value={{.ID}} value={{.Name}}>
+                    <input type="checkbox" id = {{.ID}} class="categories" name="category"  value={{.ID}}>
                     <label for="cats">{{.Name}}</label><br>
                 {{end}}
                 <input type="submit" value="Filter" class="signinupformbutton">
