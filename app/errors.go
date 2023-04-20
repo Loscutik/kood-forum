@@ -20,7 +20,7 @@ func (app *application) NotFound(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) ServerError(w http.ResponseWriter, r *http.Request, message string, err error) {
-	app.errLog.Output(2, fmt.Sprintf("fail handling the page %s: %s: %s\n%s", r.URL.Path, message, err, debug.Stack()))
+	app.errLog.Output(2, fmt.Sprintf("fail handling the page %s: %s: %s\n%v", r.URL.Path, message, err, debug.Stack()))
 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 }
 
@@ -41,6 +41,6 @@ func (app *application) Forbidden(w http.ResponseWriter, r *http.Request) {
 	tm, _ := template.ParseFiles(TEMPLATES_PATH + "forbiden.html") // Opens the HTML web page
 	err := tm.Execute(w, nil)
 	if err != nil {
-		app.ClientError(w, r,http.StatusForbidden, fmt.Sprintf("forbidden execute failed: %s",err))
+		app.ClientError(w, r,http.StatusForbidden, fmt.Sprintf("forbidden execute failed: %v",err))
 	}
 }

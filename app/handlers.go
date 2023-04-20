@@ -58,8 +58,8 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 
 	uQ := r.URL.Query()
 	var categoryID []int
-	if len(uQ["category"]) > 0 {
-		for _, c := range uQ["category"] {
+	if len(uQ[F_CATEGORIESID]) > 0 {
+		for _, c := range uQ[F_CATEGORIESID] {
 			id, err := strconv.Atoi(c)
 			if err != nil {
 				app.ClientError(w, r, http.StatusBadRequest, fmt.Sprintf("wrong category id in the filter request: %s, err: %s", c, err))

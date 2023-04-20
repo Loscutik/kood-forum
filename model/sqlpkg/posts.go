@@ -145,6 +145,8 @@ func (f *ForumModel) GetPostByID(id int) (*model.Post, error) {
 		return nil, err
 	}
 
+	post.CommentsQuantity=len(post.Comments)
+
 	return post, nil
 }
 
@@ -230,7 +232,8 @@ addes the condition to a query and run it. Returnes found posts
 */
 func (f *ForumModel) getPostsByCondition(condition string, arguments []any) ([]*model.Post, error) {
 	query := `SELECT p.id, p.theme, p.content, p.authorID, u.name, u.dateCreate, c.id, c.name,  p.dateCreate, 
-				 count(CASE WHEN pl.like THEN TRUE END), count(CASE WHEN NOT pl.like THEN TRUE END) 
+				(SELECT count(id) FROM comments cm WHERE cm.postID=p.id),
+				count(CASE WHEN pl.like THEN TRUE END), count(CASE WHEN NOT pl.like THEN TRUE END) 
 		  FROM posts p
 		  LEFT JOIN users u ON u.id=p.authorID
 		  LEFT JOIN post_categories pc ON pc.postID=p.id
@@ -287,6 +290,28 @@ func (f *ForumModel) getPostsByCondition(condition string, arguments []any) ([]*
 }
 
 /*
+scan and prefilles an item of modelPost for getPosts
+*/
+func rowScanForPosts(rows *sql.Rows) (*model.Post, *model.Category, *model.User, error) {
+	post := &model.Post{}
+	post.Message.Likes = make([]int, model.N_LIKES)
+	author := &model.User{}
+	category := &model.Category{}
+
+	// parse the row with fields:
+	// p.id, p.theme, p.content,  p.authorID, u.name, u.dateCreate, c.id, c.name,  p.dateCreate, count (cm.id),
+	// count(CASE WHEN pl.like THEN TRUE END), count(CASE WHEN NOT pl.like THEN TRUE END)
+	err := rows.Scan(&post.ID, &post.Theme, &post.Message.Content,
+		&author.ID, &author.Name, &author.DateCreate,
+		&category.ID, &category.Name,
+		&post.Message.DateCreate,
+		&post.CommentsQuantity,
+		&post.Message.Likes[model.LIKE], &post.Message.Likes[model.DISLIKE],
+	)
+	return post, category, author, err
+}
+
+/*
 creates an item of modelPost type and addes it to the slice. Used in the getPostsByCondition function
 */
 func addNewPostStruct(posts *[]*model.Post, post *model.Post, category *model.Category, author *model.User, authors *map[int]*model.User) {
@@ -300,25 +325,4 @@ func addNewPostStruct(posts *[]*model.Post, post *model.Post, category *model.Ca
 		(*authors)[author.ID] = author
 	}
 	*posts = append(*posts, post)
-}
-
-/*
-scan and prefilles an item of modelPost for getPosts
-*/
-func rowScanForPosts(rows *sql.Rows) (*model.Post, *model.Category, *model.User, error) {
-	post := &model.Post{}
-	post.Message.Likes = make([]int, model.N_LIKES)
-	author := &model.User{}
-	category := &model.Category{}
-
-	// parse the row with fields:
-	// p.id, p.theme, p.content,  p.authorID, u.name, u.dateCreate, c.id, c.name,  p.dateCreate,
-	// count(CASE WHEN pl.like THEN TRUE END), count(CASE WHEN NOT pl.like THEN TRUE END)
-	err := rows.Scan(&post.ID, &post.Theme, &post.Message.Content,
-		&author.ID, &author.Name, &author.DateCreate,
-		&category.ID, &category.Name,
-		&post.Message.DateCreate,
-		&post.Message.Likes[model.LIKE], &post.Message.Likes[model.DISLIKE],
-	)
-	return post, category, author, err
 }

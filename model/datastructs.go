@@ -58,6 +58,7 @@ type Post struct {
 	Message    message
 	Categories []*Category
 	Comments   []*Comment
+	CommentsQuantity int
 }
 
 type Category struct {
