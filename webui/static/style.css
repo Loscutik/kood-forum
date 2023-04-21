@@ -121,7 +121,21 @@
     margin: 20px;
     display: inline-block;
 }
-
+#profileimage {
+    display: block;
+    width: 150px;
+    margin: 20px;
+}
+#userinfo {
+    display: block;
+    margin-left: 230px;
+    margin-top: -130px;
+    margin-bottom: 80px;
+}
+#usnsett {
+    pointer-events: none;
+    background-color: rgb(225, 225, 225);
+}
 #openfiltersbutton {
     display: block;
     position: absolute;
