@@ -19,8 +19,8 @@
         {{if .Session.IsLoggedin}}
             <div id="headerbuttons"><a href="/addpost" id="createpost">Create post</a>
             <div id="user">
-                <img src="https://cdn-icons-png.flaticon.com/512/1144/1144760.png" id="avatar" class="likeicon"></img>
-                <span id="username">{{.Session.User.Name}}</span>
+                <img src="https://cdn-icons-png.flaticon.com/512/1144/1144760.png" id="avatar" class="likeicon" onclick="openSidepanel()"></img>
+                <span id="username" onclick="openSidepanel()">{{.Session.User.Name}}</span>
             </div>
         {{else}}
             <p id="signinup"><button class="signin" onclick="signUp()">Sign up</button> / <button class="signin" onclick="signIn()">Sign in</button></p></div>
@@ -29,7 +29,13 @@
     </header>
     
     {{if .Session.IsLoggedin}}
-
+     <div id="usersidepanel">
+        <ul id="userpanelmenu">
+        <li class="li">Profile</li>
+        <li class="li">Settings</li>
+        <li class="li">Log out</li>
+        </ul>
+    </div>
     {{else}}
         <div id="darkness" onclick="darkness()"></div>
         <div id="signinform">
@@ -66,6 +72,7 @@
     <script>changingFormSignin()</script>
     <script>checkFormSignup()</script>
     <script>checkFormSignin()</script>
+    <script>openSidepanel()</script>
     <footer id="footer">
         <p id="footertext">Created with love in 2023</p>
     </footer>
