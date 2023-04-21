@@ -29,8 +29,9 @@
 
 
     {{$loggedin := .Session.IsLoggedin}}
-    <div class="post">
+    
         {{range .Posts}}
+        <div class="post">
             <a href="/post/p{{.ID}}">
             <p id={{.ID}} class="post-id">#{{.ID}} by {{.Message.Author.Name}} {{range .Categories}} <span id={{.ID}}>, #{{.Name}}</span>{{end}}</p>
             <div id="{{.ID}}-content" class="post-content">
@@ -48,8 +49,10 @@
                 {{end}}
                     <a href="/post/p{{.ID}}" id="{{.ID}}-comments-link" class="comments-link">Comments ({{.CommentsQuantity}})</a>
             </div>
+            </div>
             {{else}}
             <p>Be the first post creator</p>
+            
         {{end}}
-    </div>
+
 {{end}}
