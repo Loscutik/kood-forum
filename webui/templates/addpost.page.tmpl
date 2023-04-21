@@ -9,8 +9,16 @@
             <form id="pform">
                 <input  id="invisible" name="authorID" value="{{.Session.User.ID}}"></input>
                 <input type="text" id="PostTopic" name="theme" placeholder="Header"><br><br>
-                <textarea id="textarea_newpost" name="content" placeholder="Enter your text here..."></textarea>
-                
+                <textarea id="textarea_newpost" name="content" placeholder="Enter your text here..."></textarea><br><br>
+                <div id="choosepostcategory">
+                <label for="checkbox">Choose tags:</label><br>
+                <input type="checkbox" name="categoriesID" value="cats">
+                <label for="cats">Cats</label><br>
+                <input type="checkbox" name="categoriesID" value="dogs">
+                <label for="dogs">Dogs</label><br>
+                <input type="checkbox" name="categoriesID" value="pets">
+                <label for="pets">Pets</label><br>
+                </div>
                 <button id="submitpost" class="signinupformbutton" formaction="/post/create" formmethod="post">Create post</button>
             </form>
         </div>
