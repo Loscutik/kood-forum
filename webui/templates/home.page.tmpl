@@ -12,18 +12,17 @@
                 <p>Select a category:</p>
                 {{range .Categories}}
                     <input type="checkbox" id = {{.ID}} class="categories" name="categoriesID"  value={{.ID}}>
-                    <label for="cats">{{.Name}}</label><br>
+                    <label for="cats">{{.Name}}</label><br><br>
                 {{end}}
-                <input type="submit" value="Filter" class="signinupformbutton">
-            </form>
-            <form id="myposts">
                 <p>Show only:</p>
                 <input type="checkbox" class="cateories" name="cats" value="MyPosts">
                 <label for="MyPosts">My posts</label><br>
                 <input type="checkbox" class="cateories" name="dogs" value="MyLikes">
                 <label for="MyLikes">My likes</label><br>
                 <input type="checkbox" class="cateories" name="dogs" value="MyDislikes">
-                <label for="MyDislikes">My dislikes</label><br>
+                <label for="MyDislikes">My dislikes</label><br><br><br>
+
+                <input type="submit" value="Filter" class="signinupformbutton">
             </form>
         </div>
     </div>
