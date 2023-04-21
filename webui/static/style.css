@@ -39,6 +39,7 @@
 }
 #createpost:hover {
     background-color: rgb(234, 176, 43);
+    box-shadow: inset 0px 5px 10px 1px rgba(0, 0, 0, 0.05);
 }
 #signinup {
     display: flex;
@@ -189,6 +190,43 @@
 }
 .signinupformbutton:hover {
     background-color: rgb(234, 176, 43);
+}
+#usersidepanel {
+    display: block;
+    position: fixed;
+    right: 0px;
+    width: 250px;
+    height: 1200px;
+    margin-top: -100px;
+    background-color: rgb(234, 176, 43);
+    font-family: 'Roboto', sans-serif;
+    z-index: 70;
+    transition: right 0.5s;
+    box-shadow: -10px 0px 50px 0px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+#userpanelmenu {
+    list-style-type: none;
+    color: rgb(255, 255, 255);
+    padding: 0px;
+}
+.li {
+    margin: 0px;
+    padding: 20px;
+    transition: 0.2s;
+    border-bottom: 1px solid rgba(192, 154, 19, 0.6);
+}
+.li:hover {
+    background: rgb(2,0,36);
+    background: linear-gradient(119deg, rgba(255,252,0,0.7) 0%, rgba(255,200,0,0.7) 100%);
+}
+.li:first-child {
+    margin-top: 81px;
+    border-top: 1px solid rgba(192, 154, 19, 0.6);
+}
+.solid {
+    margin: 0px;
+    padding: 0px;
 }
 .post {
     display: block;
