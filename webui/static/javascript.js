@@ -201,6 +201,13 @@ function darkness() {
   document.getElementById("signinform").style.display = "none";
   document.getElementById("signupform").style.display = "none";
 }
+function openSidepanel() {
+  if (document.getElementById("usersidepanel").style.display == "none") {
+    document.getElementById("usersidepanel").style.display = "block";
+  } else {
+    document.getElementById("usersidepanel").style.display = "none";
+  }
+}
 function openFilters() {
   if (document.getElementById("filterform").style.display == "none") {
     document.getElementById("filterform").style.display = "block";
