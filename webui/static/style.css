@@ -119,6 +119,11 @@
 }
 #fform {
     margin: 20px;
+    display: inline-block;
+}
+#myposts {
+    margin: 20px;
+    display: inline-block;
 }
 #openfiltersbutton {
     display: block;
