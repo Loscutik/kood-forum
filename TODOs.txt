@@ -5,4 +5,4 @@ backend: signup, signin - check fields - they must be filled
 add to html the name of post(comments)'s author and the crwating date
 logout button
 a page for user information
-filters - add filters for "posts created by user" (name="author") and "post liked by user" (name="likedby")  value={{.Session.User.Name}}
+settings page

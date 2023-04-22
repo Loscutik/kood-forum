@@ -12,7 +12,7 @@
                 <p>Select a category:</p>
                 {{range .Categories}}
                     <input type="checkbox" id = {{.ID}} class="categories" name="categoriesID"  value={{.ID}}>
-                    <label for="cats">{{.Name}}</label><br><br>
+                    <label for="cats">{{.Name}}</label><br>
                 {{end}}
                 <p>Show only:</p>
                 <input type="checkbox" class="cateories" name="cats" value="MyPosts">

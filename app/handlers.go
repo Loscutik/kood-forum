@@ -360,7 +360,7 @@ func (app *application) userPageHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// get a user id from URL
-	const prefix = "/user/@"
+	const prefix = "/userinfo/@"
 	stringID := strings.TrimPrefix(r.URL.Path, prefix)
 	if stringID == r.URL.Path { // if the prefix doesn't exist
 		app.NotFound(w, r)
@@ -517,11 +517,17 @@ func (app *application) addPostPageHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	categories, err := app.forumData.GetCategories()
+	if err != nil {
+		app.ServerError(w, r, "getting data (set of categories) from DB failed", err)
+		return
+	}
+
 	// create a page
 	output := &struct {
 		Session *session
-	}{Session: ses}
-
+		Categories []*model.Category
+	}{Session: ses, Categories: categories}
 	app.executeTemplate(w, r, "addpost", output)
 }
 
@@ -680,7 +686,8 @@ func (app *application) likingHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// write responce in JSON
-	w.Write([]byte(fmt.Sprintf(`{"like": "%d", "dislike": "%d"}`, likes[model.LIKE], likes[model.DISLIKE])))
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w,`{"like": "%d", "dislike": "%d"}`, likes[model.LIKE], likes[model.DISLIKE])
 }
 
 /*

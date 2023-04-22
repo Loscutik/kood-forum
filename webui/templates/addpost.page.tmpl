@@ -12,12 +12,10 @@
                 <textarea id="textarea_newpost" name="content" placeholder="Enter your text here..."></textarea><br><br>
                 <div id="choosepostcategory">
                 <label for="checkbox">Choose tags:</label><br>
-                <input type="checkbox" name="categoriesID" value="cats">
-                <label for="cats">Cats</label><br>
-                <input type="checkbox" name="categoriesID" value="dogs">
-                <label for="dogs">Dogs</label><br>
-                <input type="checkbox" name="categoriesID" value="pets">
-                <label for="pets">Pets</label><br>
+                {{range .Categories}}
+                    <input type="checkbox" id = {{.ID}} class="categories" name="categoriesID"  value={{.ID}}>
+                    <label for="cats">{{.Name}}</label><br>
+                {{end}}
                 </div>
                 <button id="submitpost" class="signinupformbutton" formaction="/post/create" formmethod="post">Create post</button>
             </form>
