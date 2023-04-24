@@ -10,6 +10,7 @@ func (app *application) routers() *http.ServeMux {
 	mux.HandleFunc("/signup/success", app.signupSuccessPageHandler)
 	mux.HandleFunc("/login", app.signinPageHandler)
 	mux.HandleFunc("/userinfo/", app.userPageHandler)
+	mux.HandleFunc("/settings", app.settingsPageHandler)
 	mux.HandleFunc("/post/", app.postPageHandler)
 	mux.HandleFunc("/addpost", app.addPostPageHandler)
 	mux.HandleFunc("/post/create", app.postCreatorHandler)

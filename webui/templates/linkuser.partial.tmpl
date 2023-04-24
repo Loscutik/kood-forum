@@ -1,0 +1,4 @@
+{{/*user's name wrapped with a link to user's profile page*/}}
+{{define "linkuser"}}
+    <a href="/userinfo/@{{.Message.Author.ID}}">{{.Message.Author.Name}}</a>
+{{end}}

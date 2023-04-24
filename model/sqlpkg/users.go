@@ -203,3 +203,37 @@ func (f *ForumModel) AddUser(name, email string, password []byte, dateCreate tim
 
 	return id, nil
 }
+
+/*
+changes an email of the user with the given id
+*/
+func (f *ForumModel) ChangeUsersEmail(id int, email string) error {
+	err:= f.changeUsersField(id, "email", email)
+	if err != nil {
+		errUnique := f.CheckUserByEmail(email)
+		if errUnique == nil {
+			return model.ErrUniqueUserEmail
+		}
+	}
+	return err
+}
+
+/*
+changes a password of the user with the given id
+*/
+func (f *ForumModel) ChangeUsersPassword(id int, password string) error {
+	return f.changeUsersField(id, "password", password)
+}
+
+/*
+changes a field in the users table for the user with the given id
+*/
+func (f *ForumModel) changeUsersField(id int, field, value string) error {
+	q := `UPDATE users SET ` + field + `=? WHERE id=?`
+	res, err := f.DB.Exec(q, value, id)
+	if err != nil {
+		return err
+	}
+
+	return f.checkUnique(res)
+}

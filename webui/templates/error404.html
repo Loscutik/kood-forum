@@ -1,3 +1,7 @@
-{{define "error404"}}
-Error4004
+{{template "base" .}}
+
+{{define "title"}}404{{end}}
+ 
+{{define "main"}}
+    <img src="./static/img/404notfound.jpg" id="mainpic"  class="post" alt="Error 404, Page not found"></img>
 {{end}}

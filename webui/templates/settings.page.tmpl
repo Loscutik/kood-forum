@@ -1,0 +1,25 @@
+{{template "base" .}}
+
+{{define "title"}}User's settings{{end}}
+
+{{define "main"}}
+    <div class="post">
+       <img src="/static/img/userimage.png" id="profileimage"></img>
+       <div id="userinfo">
+            <form id="changeemail">
+                <input type="text" id="usnsett" name="username" placeholder="{{.Session.User.Name}}" readonly><br><br>
+                <input type="email" id="email" name="email" placeholder="change e-mail"><br><br>
+                <span id="warning_email" class="warning"></span><br>
+                <input type="button" value="Change" id="submit_email" class="signinupformbutton"><br><br>
+            </form>
+            <form id="changepassword">
+                <input type="text" class="password" id="password" name="password" placeholder="new password"><br><br>
+                <input type="text" class="password" id="confirm_password" name="password" placeholder="confirm password"><br><br>
+                 <span id="warning_password" class="warning">passwords do not match</span><br>
+                <input type="button" value="Change" id="submit_password" class="signinupformbutton"><br>
+            </form>
+       </div>
+    </div>
+
+    <script>checkFormSettings()</script>
+ {{end}}  

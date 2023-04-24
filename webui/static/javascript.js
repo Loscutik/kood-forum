@@ -14,6 +14,7 @@ function header3() {
 document.getElementById("header").style.marginTop = "-57px";
   }
 }
+
 function signIn() {
   document.getElementById("darkness").style.display = "block";
   document.getElementById("signinform").style.display = "block";
@@ -50,6 +51,8 @@ function checkFormSignup(){
         password: password.value,
       };
       
+      sendPost(data, "/signup", warning, goIfSuccess);
+      /*
       // create a request with form-data
       const urlEncodedDataPairs = [];
       for (const [name, value] of Object.entries(data)) {
@@ -85,7 +88,7 @@ function checkFormSignup(){
           warning.innerHTML=text;
           warning.style.display="block";
         }
-      });
+      });*/
     }
   });
 }
@@ -107,7 +110,10 @@ function checkFormSignin(){
         name: name.value,
         password: password.value,
       };
+
+      sendPost(data, "/login", warning, goIfSuccess)
       
+      /*
       // create a request with form-data
       const urlEncodedDataPairs = [];
       for (const [name, value] of Object.entries(data)) {
@@ -143,7 +149,7 @@ function checkFormSignin(){
           warning.innerHTML=text;
           warning.style.display="block";
         }
-      });
+      });*/
     }
   });
 }
@@ -201,6 +207,7 @@ function darkness() {
   document.getElementById("signinform").style.display = "none";
   document.getElementById("signupform").style.display = "none";
 }
+
 function openSidepanel() {
   if (document.getElementById("usersidepanel").style.display == "none") {
     document.getElementById("usersidepanel").style.display = "block";
@@ -208,6 +215,7 @@ function openSidepanel() {
     document.getElementById("usersidepanel").style.display = "none";
   }
 }
+
 function openFilters() {
   if (document.getElementById("filterform").style.display == "none") {
     document.getElementById("filterform").style.display = "block";
@@ -219,6 +227,7 @@ function openFilters() {
     document.getElementById("closefilterslogo").style.display = "none";
   }
 }
+
 function ShowPassword() {
   var x = document.getElementsByClassName("password");
   for (let i = 0; i < x.length; i++) {
@@ -229,3 +238,94 @@ function ShowPassword() {
     }
   }
 }
+
+function checkFormSettings(){ 
+  const email=document.getElementById("email") 
+  const submitEmail=document.getElementById("submit_email");
+  const warningEmail=document.getElementById("warning_email");
+  const password=document.getElementById("password");
+  const confirmPassword=document.getElementById("confirm_password");
+  const submitPassword=document.getElementById("submit_password");
+  const warningPassword=document.getElementById("warning_password");
+  
+  submitEmail.addEventListener("click", event => {
+    if (email.value==null || email.value==""){
+      warningEmail.innerHTML="fill all fields";
+      warningEmail.style.display="block";
+    }else{
+      // send data by post
+      // form data for post
+      let data = { 
+        email: email.value,
+      };
+      
+      sendPost(data, "/settings", warningEmail, (res=>{})); 
+    }
+  });
+
+  submitPassword.addEventListener("click", event => {
+    if (password.value==null ||confirmPassword.value==null || password.value=="" || confirmPassword.value==""){
+      warningPassword.innerHTML="fill all fields";
+      warningPassword.style.display="block";
+    }else if (password.value!=confirmPassword.value){
+      warningPassword.innerHTML="passwords do not match";
+      warningPassword.style.display="block";
+    }else{
+      // send data by post
+      // form data for post
+      let data = { 
+        password: password.value,
+      };
+      
+      sendPost(data, "/settings", warningPassword, (res=>{})); 
+    }
+  });
+}
+
+async function goIfSuccess(res){
+  if (res.status==204){
+    window.location.href =res.headers.get("Location");
+  }
+}
+
+const sendPost = async  (data, url, warningElm, checkSpecialCase)=>{
+   // create a request with form-data
+   const urlEncodedDataPairs = [];
+   for (const [name, value] of Object.entries(data)) {
+     urlEncodedDataPairs.push(`${encodeURIComponent(name)}=${encodeURIComponent(value)}`);
+   }
+   
+   // Combine the pairs into a single string and replace all %-encoded spaces to
+   // the '+' character; matches the behavior of browser form submissions.
+   const urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
+   const headers = new Headers();
+   headers.append('Content-Type', 'application/x-www-form-urlencoded');
+   
+   // send the POST request to the server
+   const res= await fetch(url, {
+     method: "POST",
+     headers: headers,
+     credentials: "same-origin",
+     redirect: "error", 
+     body: urlEncodedData
+   })
+
+    if (!res.ok){
+      const html=  await res.text();
+      document.querySelector("html").innerHTML=html;
+      return; 
+    }else{
+      checkSpecialCase(res);
+      const text = await res.text();
+      if (text.length!=0){
+        warningElm.innerHTML=text;
+        warningElm.style.display="block";
+      }
+    }
+}
+/*
+else if (password.value!=confirmPassword.value){
+  warning.innerHTML="no emails is there for changing";
+  warning.style.display="block";
+if (email.value==null ||name.value==null ||password.value==null ||confirmPassword.value==null|| email.value=="" || name.value=="" ||password.value=="" ||confirmPassword.value==""){
+*/

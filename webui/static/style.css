@@ -337,3 +337,8 @@ a {
 #invisible{
     display: none;
 }
+
+#mainpic {
+    margin: 0 auto;
+    width: 40%;
+   }

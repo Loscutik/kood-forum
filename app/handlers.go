@@ -121,12 +121,12 @@ func (app *application) signupPageHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 	if ses.LoginStatus == loggedin {
-		w.Header().Add("Location", "/")		
+		w.Header().Add("Location", "/")
 		w.WriteHeader(204)
 		return
 	}
 	if ses.LoginStatus == experied {
-		w.Header().Add("Location", "/login")		
+		w.Header().Add("Location", "/login")
 		w.WriteHeader(204)
 		return
 	}
@@ -150,7 +150,7 @@ func (app *application) signupPageHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	// check email
-	if !regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`).Match([]byte(email)){
+	if !regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`).Match([]byte(email)) {
 		w.Write([]byte("wrong email"))
 		return
 	}
@@ -184,7 +184,7 @@ func (app *application) signupPageHandler(w http.ResponseWriter, r *http.Request
 		}
 
 		// responde to JS, with status 204 it will link to /signup/success
-		w.Header().Add("Location", "/signup/success")		
+		w.Header().Add("Location", "/signup/success")
 		w.WriteHeader(204)
 
 	} else { // adding is failed - error mesage and respond with the filled form
@@ -282,7 +282,7 @@ func (app *application) signinPageHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 	if ses.IsLoggedin() {
-		w.Header().Add("Location", "/")		
+		w.Header().Add("Location", "/")
 		w.WriteHeader(204)
 		return
 	}
@@ -340,7 +340,7 @@ func (app *application) signinPageHandler(w http.ResponseWriter, r *http.Request
 		}
 
 		// responde to JS, with status 204 it will link to the home page
-		w.Header().Add("Location", "/")		
+		w.Header().Add("Location", "/")
 		w.WriteHeader(204)
 
 	} else { // the password is wrong - error mesage and respond with the filled form
@@ -350,7 +350,7 @@ func (app *application) signinPageHandler(w http.ResponseWriter, r *http.Request
 }
 
 /*
-the userinfo page. Route: /userinfo/. Methods: GET. Template: userinfo
+the userinfo page. Route: /userinfo/@{{Id}}. Methods: GET. Template: userinfo
 */
 func (app *application) userPageHandler(w http.ResponseWriter, r *http.Request) {
 	// only GET method is allowed
@@ -406,7 +406,87 @@ func (app *application) userPageHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 /*
-the post's page. Route: /post/. Methods: GET, POST. Template: post
+the user's settings page.  Route: /settings. Methods: GET,POST. Template: settings
+*/
+func (app *application) settingsPageHandler(w http.ResponseWriter, r *http.Request) {
+	ses, err := app.checkLoggedin(w, r)
+	if err != nil {
+		// checkLoggedin has already written error status to w
+		return
+	}
+	if ses.LoginStatus != loggedin {
+		app.Forbidden(w, r)
+		return
+	}
+
+	switch r.Method {
+	case http.MethodPost:
+		// get data from a form
+		err = r.ParseForm()
+		if err != nil {
+			app.ServerError(w, r, "parsing form error", err)
+			return
+		}
+
+		email := r.PostFormValue(F_EMAIL)
+		password := r.PostFormValue(F_PASSWORD)
+		if email == "" && password == "" {
+			app.ClientError(w, r, http.StatusBadRequest, "nothing to change") 
+			return
+		}
+
+		// check email
+		if email != "" {
+			if !regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`).Match([]byte(email)) {
+				w.Write([]byte("wrong email")) 
+				return
+			}
+
+			err = app.forumData.ChangeUsersEmail(ses.User.ID, email)
+			if err != nil {
+				if errors.Is(err, model.ErrUniqueUserEmail) {
+					w.Write([]byte("the email already exists")) 
+					return
+				} else {
+					app.ServerError(w, r, "changing user's email failed", err)
+					return
+				}
+			}
+
+			w.Write([]byte("the email has been successfully changed")) 
+			return
+		}
+		if password != "" {
+			hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), 8)
+			if err != nil {
+				app.ServerError(w, r, "password crypting failed", err)
+				return
+			}
+
+			err = app.forumData.ChangeUsersPassword(ses.User.ID, string(hashPassword))
+			if err != nil {
+				app.ServerError(w, r, "changing user's password failed", err)
+				return
+			}
+
+			w.Write([]byte("the password has been successfully changed"))
+			return
+		}
+
+	case http.MethodGet:
+		// create a page
+		output := &struct {
+			Session *session
+		}{Session: ses}
+		app.executeTemplate(w, r, "settings", output)
+	default:
+		// only GET or PUT methods are allowed
+		app.MethodNotAllowed(w, r, http.MethodGet+", "+http.MethodPost)
+	}
+}
+
+/*
+the post's page. Route: /post/p{{Id}}. Methods: GET, POST. Template: post
 */
 func (app *application) postPageHandler(w http.ResponseWriter, r *http.Request) {
 	// only GET or PUT methods are allowed
@@ -525,7 +605,7 @@ func (app *application) addPostPageHandler(w http.ResponseWriter, r *http.Reques
 
 	// create a page
 	output := &struct {
-		Session *session
+		Session    *session
 		Categories []*model.Category
 	}{Session: ses, Categories: categories}
 	app.executeTemplate(w, r, "addpost", output)
@@ -687,7 +767,7 @@ func (app *application) likingHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	// write responce in JSON
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w,`{"like": "%d", "dislike": "%d"}`, likes[model.LIKE], likes[model.DISLIKE])
+	fmt.Fprintf(w, `{"like": "%d", "dislike": "%d"}`, likes[model.LIKE], likes[model.DISLIKE])
 }
 
 /*

@@ -1,0 +1,17 @@
+{{template "base" .}}
+
+{{define "title"}}User profile{{end}}
+
+{{define "main"}}
+        <div class="post">
+            <img src="/static/img/userimage.png" id="profileimage"></img>
+            <div id="userinfo">
+                <span>Username: {{.User.Name}}</span><br><br>
+                <span>Email:  {{.User.Email}}</span><br><br>
+                <span>Account created: {{.User.DateCreate.Day}} {{.User.DateCreate.Month}} {{.User.DateCreate.Year}}</span><br><br><br>
+                {{if .AllInfo}}
+                     <a href="/settings"><button class="signinupformbutton">Settings</button></a>
+                {{end}}
+            </div>
+        </div>
+{{end}}

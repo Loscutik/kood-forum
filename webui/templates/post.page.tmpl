@@ -6,7 +6,7 @@
     {{$loggedin := .Session.IsLoggedin}}
     <div class="post">
         {{with .Post}}
-            <p id ={{.ID}} class="post-id">#{{.ID}} by {{.Message.Author.Name}} {{range .Categories}} <span id={{.ID}}>, #{{.Name}}</span>{{end}}</p>
+            <p id ={{.ID}} class="post-id">#{{.ID}} by {{template "linkuser" .}} {{range .Categories}} <span id={{.ID}}>, #{{.Name}}</span>{{end}}</p>
             <div id="{{.ID}}-content" class="post-content">
                 <p><b>{{.Theme}}</b></p>
                 {{.Message.Content}}
@@ -29,7 +29,7 @@
 
     {{range .Post.Comments}}
         <div id="comments-{{.ID}}" class="post">
-            <p class="post-id">#{{.ID}} by {{.Message.Author.Name}} </p>
+            <p class="post-id">#{{.ID}} by {{template "linkuser" .}} </p>
             <div id="{{.ID}}-comment-content" class="post-content">
                 {{.Message.Content}}
             </div>

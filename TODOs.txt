@@ -4,5 +4,5 @@ compare passwords using JS
 backend: signup, signin - check fields - they must be filled
 add to html the name of post(comments)'s author and the crwating date
 logout button
-a page for user information
+a page for user information - tie up at all menion of user - create template for it 
 settings page

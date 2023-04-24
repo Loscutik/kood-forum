@@ -36,8 +36,14 @@ func newTemplateCache(templateDir string) (map[string]*template.Template, error)
 		if err != nil {
 			return nil, err
 		}
-		// TODO if it needs add addintional templates (for ex. - footer)
-		temlateCashe[strings.TrimSuffix(tm.Name(),".page.tmpl")] = tm
+
+		// add partial templates to the each page
+		tm, err = tm.ParseGlob(filepath.Join(templateDir, "*.partial.tmpl"))
+		if err != nil {
+			return nil, err
+		}
+		
+		temlateCashe[strings.TrimSuffix(tm.Name(), ".page.tmpl")] = tm
 	}
 	return temlateCashe, nil
 }
