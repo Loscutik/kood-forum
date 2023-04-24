@@ -323,9 +323,4 @@ const sendPost = async  (data, url, warningElm, checkSpecialCase)=>{
       }
     }
 }
-/*
-else if (password.value!=confirmPassword.value){
-  warning.innerHTML="no emails is there for changing";
-  warning.style.display="block";
-if (email.value==null ||name.value==null ||password.value==null ||confirmPassword.value==null|| email.value=="" || name.value=="" ||password.value=="" ||confirmPassword.value==""){
-*/
+
