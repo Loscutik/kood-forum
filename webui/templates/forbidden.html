@@ -1,0 +1,55 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css"> {{/*changed path*/}}
+    <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico">
+    <script type="text/javascript" src="/static/javascript.js"></script> {{/*changed path*/}}
+    <title>Forum-{{template "title" .}}</title>
+</head>
+<body id="body" onscroll="header()">
+    <header id="header" onmouseover="header2()" onmouseout="header3()">
+        <a href="/"><img id="logo" src="https://assets.website-files.com/61ed56ae9da9fd7e0ef0a967/61f12ec2e784a6708ebf43fe_WavelessDefault.svg"></a>
+        {{if .Session.IsLoggedin}}
+            <div id="headerbuttons"><a href="/addpost" id="createpost">Create post</a>
+            <div id="user">
+                <img src="https://cdn-icons-png.flaticon.com/512/1144/1144760.png" id="avatar" class="likeicon" onclick="openSidepanel()"></img>
+                <span id="username" onclick="openSidepanel()">{{.Session.User.Name}}</span>
+            </div>
+        {{else}}
+            <p id="signinup"><button class="signin" onclick="signUp()">Sign up</button> / <button class="signin" onclick="signIn()">Sign in</button></p></div>
+        {{end}}
+        <span style="clear:both"></span>
+    </header>
+
+{{define "title"}}Error 403{{end}}
+
+{{define "main"}}
+     <div class="post" >
+        <img src="/static/img/forbidden.png" id="deniedlogo"></img>
+        <p id="error403">Error 403</p>
+        <p id="denied">Access forbidden!</p>
+        <span id="oops">Oops! You don't have permission to access this page!</span><br><br>
+    <span id="makesure">Please make sure that you have signed in</span>
+    <button class="signinupformbutton" id="signindenied" onclick="signIn()">Sign in</button></p>
+    </div>
+    {{if .Session.IsLoggedin}}
+    <script>openSidepanel()</script>
+{{else}}
+<script>changingFormSignup()</script>
+<script>changingFormSignin()</script>
+<script>checkFormSignup()</script>
+<script>checkFormSignin()</script>
+{{end}}
+<footer id="footer">
+<p id="footertext">Created with love in 2023</p>
+</footer>
+</body>
+</html>
+{{end}}
