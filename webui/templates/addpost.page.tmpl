@@ -6,7 +6,7 @@
     
     <div>
         <div class="post">
-            <form id="pform">
+            <form id="pform" name="pform" onsubmit="return validatePost()" onclick="CheckValidatePost()">
                 <input  id="invisible" name="authorID" value="{{.Session.User.ID}}"></input>
                 <input type="text" id="PostTopic" name="theme" placeholder="Header"><br><br>
                 <textarea id="textarea_newpost" name="content" placeholder="Enter your text here..."></textarea><br><br>
@@ -17,7 +17,7 @@
                     <label for="cats">{{.Name}}</label><br>
                 {{end}}
                 </div>
-                <button id="submitpost" class="signinupformbutton" formaction="/post/create" formmethod="post">Create post</button>
+                <button id="submitpost" class="signinupformbutton" formaction="/post/create" formmethod="post" onclick="Up()">Create post</button>
             </form>
         </div>
     </div>
