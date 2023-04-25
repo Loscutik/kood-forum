@@ -67,9 +67,75 @@
     color: rgb(234, 176, 43);
     text-decoration: underline;
 }
+#username:hover {
+    cursor: pointer;
+}
 #headerbuttons {
     float:right;
     display: flex;
+}
+#ticksuccessfulreg {
+    width:100px;
+    margin-top: 70px;
+    margin-left: 290px;
+}
+#success {
+    margin-left: 197px;
+    margin-bottom: 12px;
+    font-size: 40px;
+    color: rgba(0, 0, 0, 0.75);
+}
+#accountcreated {
+    margin-left: 219px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: rgba(0, 0, 0, 0.8);
+}
+#signinsuccess {
+    margin-left: 238px;
+    margin-bottom: 70px;
+    margin-top: 70px;
+    width: 200px;
+    height: 50px;
+    border-radius: 30px;
+    font-size: 20px;
+}
+#deniedlogo {
+    width:210px;
+    margin-top: 70px;
+    margin-left: 235px;
+}
+#error403 {
+    margin-left: 228px;
+    margin-bottom: 8px;
+    font-size: 55px;
+    color: rgb(211, 45, 30);
+    font-weight: 800;
+}
+#denied {
+    margin-left: 193px;
+    margin-bottom: 50px;
+    margin-top: 0px;
+    font-size: 37px;
+    color: rgb(211, 45, 30);
+    font-weight: 800;
+}
+#oops {
+    margin-left: 115px;
+    font-size: 20px;
+    margin-bottom: 50px;
+    color: rgba(0, 0, 0, 0.7);
+}
+#makesure {
+    margin-left: 180px;
+    margin-top: 30px;
+    font-size: 18px;
+    color: rgba(0, 0, 0, 0.3);
+}
+#signindenied {
+    margin-left: 280px;
+    margin-bottom: 70px;
+    margin-top: 70px;
 }
 #user {
     display: flex;
@@ -77,6 +143,7 @@
     margin-right: 40px;
     margin-top: 20px;
     font-family: 'Roboto', sans-serif;
+    cursor: pointer;
 }
 #avatar {
     display: flex;
@@ -89,12 +156,18 @@
     height: 350px;
     resize: none;
     padding: 10px;
+    border: solid 1px;
+    border-radius: 3px;
+    border-color: rgb(0, 0, 0);
 }
 #PostTopic {
     margin: 20px 20px 0px 20px;
     width: 646px;
     height: 30px;
     padding: 5px;
+    border: solid 1px;
+    border-radius: 3px;
+    border-color: rgb(0, 0, 0);
 }
 #submitpost {
     width: 140px;
@@ -124,17 +197,21 @@
 #profileimage {
     display: block;
     width: 150px;
-    margin: 20px;
+    margin: 50px;
 }
 #userinfo {
     display: block;
-    margin-left: 230px;
-    margin-top: -130px;
+    margin-left: 260px;
+    margin-top: -170px;
     margin-bottom: 80px;
 }
 #usnsett {
     pointer-events: none;
     background-color: rgb(225, 225, 225);
+    border: solid 1px;
+    border-radius: 2px;
+    height: 20px;
+    width: 165px;
 }
 #openfiltersbutton {
     display: block;
@@ -203,6 +280,7 @@
     color:white;
     font-family: 'Roboto', sans-serif;
     transition: 0.2s;
+    cursor: pointer;
 }
 .signinupformbutton:hover {
     background-color: rgb(234, 176, 43);
