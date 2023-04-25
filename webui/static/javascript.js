@@ -324,3 +324,44 @@ const sendPost = async  (data, url, warningElm, checkSpecialCase)=>{
     }
 }
 
+function validatePost() {
+  var x = document.forms["pform"]["theme"].value;
+  var y = document.forms["pform"]["content"].value;
+  if (x == "") {
+    document.getElementById("PostTopic").style.border = "solid 2px";
+    document.getElementById("PostTopic").style.borderColor = "rgb(232, 0, 0)";
+    document.getElementById("PostTopic").style.borderRadius = "3px";
+    document.getElementById("PostTopic").placeholder = "Please enter the topic!";
+  }
+  if (y == "") {
+    document.getElementById("textarea_newpost").style.border = "solid 2px";
+    document.getElementById("textarea_newpost").style.borderColor = "rgb(232, 0, 0)";
+    document.getElementById("textarea_newpost").style.borderRadius = "3px";
+    document.getElementById("textarea_newpost").placeholder = "Please enter the text!";
+  }
+  if (x == "" || y == "") {
+    return false
+  }
+  else {
+    return true
+  }
+}
+
+function CheckValidatePost() {
+  if (validatePost() == false) {
+    document.getElementById("PostTopic").style.border = "solid 1px";
+    document.getElementById("PostTopic").style.borderColor = "rgb(0, 0, 0)";
+    document.getElementById("PostTopic").style.borderRadius = "3px";
+    document.getElementById("PostTopic").placeholder = "Header";
+    document.getElementById("textarea_newpost").style.border = "solid 1px";
+    document.getElementById("textarea_newpost").style.borderColor = "rgb(0, 0, 0)";
+    document.getElementById("textarea_newpost").style.borderRadius = "3px";
+    document.getElementById("textarea_newpost").placeholder = "Enter your text here...";
+  }
+}
+
+function Up() {
+  if (validatePost() == false) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
