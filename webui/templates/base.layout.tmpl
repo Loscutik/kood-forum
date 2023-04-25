@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css"> {{/*changed path*/}}
+    <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico">
     <script type="text/javascript" src="/static/javascript.js"></script> {{/*changed path*/}}
     <title>Forum-{{template "title" .}}</title>
 </head>
@@ -30,9 +31,9 @@
     {{if .Session.IsLoggedin}}
      <div id="usersidepanel">
         <ul id="userpanelmenu">
-            <a href="/userinfo/@{{.Session.User.ID}}"><li class="li">Profile</li></a>
-            <a href="/settings"><li class="li">Settings</li></a>
-            <a href="/logout"><li class="li">Log out</li></a>
+            <li class="li"><a href="/userinfo/@{{.Session.User.ID}}">Profile</a></li>
+            <li class="li"><a href="/settings">Settings</a></li>
+            <li class="li"><a href="/logout">Log out</a></li>
         </ul>
     </div>
     {{else}}
