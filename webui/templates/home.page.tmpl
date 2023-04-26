@@ -10,8 +10,7 @@
             <form id="fform">
                 <p>Select a category:</p>
                 {{range .Categories}}
-                    <input type="checkbox" id = {{.ID}} class="categories" name="categoriesID"  value={{.ID}}>
-                    <label for="cats">{{.Name}}</label><br>
+                    <label class="categorylabel"><input type="checkbox" id = {{.ID}} class="categories" name="categoriesID" value={{.ID}}>{{.Name}}</label>
                 {{end}}
                  {{if .Session.IsLoggedin}}
                 <p>Show only:</p>
@@ -54,5 +53,4 @@
             <p>Be the first post creator</p>
             
         {{end}}
-
 {{end}}
