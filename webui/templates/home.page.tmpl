@@ -4,7 +4,6 @@
 
 {{define "main"}}
 
-
     <div id="filters">
         <button id="openfiltersbutton" class="likeicon" onclick="openFilters()"><img class="likeicon" id="filterslogo" src="https://cdn-icons-png.flaticon.com/512/3161/3161370.png"></img><img class="likeicon" id="closefilterslogo" src="https://cdn-icons-png.flaticon.com/512/2734/2734822.png"></img></button>
         <div id="filterform" class="post" style="display:none">
@@ -14,14 +13,15 @@
                     <input type="checkbox" id = {{.ID}} class="categories" name="categoriesID"  value={{.ID}}>
                     <label for="cats">{{.Name}}</label><br>
                 {{end}}
+                 {{if .Session.IsLoggedin}}
                 <p>Show only:</p>
-                <input type="checkbox" class="cateories" name="cats" value="MyPosts">
+                <input type="checkbox" class="cateories" name="author" value={{".Session.User.ID"}}>
                 <label for="MyPosts">My posts</label><br>
-                <input type="checkbox" class="cateories" name="dogs" value="MyLikes">
+                <input type="checkbox" class="cateories" name="likedby" value={{".Session.User.ID"}}>
                 <label for="MyLikes">My likes</label><br>
                 <input type="checkbox" class="cateories" name="dogs" value="MyDislikes">
                 <label for="MyDislikes">My dislikes</label><br><br><br>
-
+                {{end}}
                 <input type="submit" value="Filter" class="signinupformbutton">
             </form>
         </div>
