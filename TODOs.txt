@@ -1,3 +1,3 @@
-- add to html the name of post(comments)'s author and the crwating date
+- add to html the creating date {{.Message.DateCreate.Date}}
 
 - make beautiful checkboxes
