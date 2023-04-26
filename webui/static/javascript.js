@@ -365,3 +365,11 @@ function Up() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.categorylabel').forEach(el => {
+    el.addEventListener("click", function(ev){
+      ev.target.classList.toggle("selected")
+    })
+  });
+}, false);
