@@ -1,0 +1,14 @@
+{{template "base" .}}
+
+{{define "title"}}Error 403{{end}}
+
+{{define "main"}}
+    <div class="post" >
+        <img src="/static/img/forbidden.png" id="deniedlogo"></img>
+        <p id="error403">Error 403</p>
+        <p id="denied">Access forbidden!</p>
+        <span id="oops">Oops! You don't have permission to access this page!</span><br><br>
+    <span id="makesure">Please make sure that you have signed in</span>
+    <button class="signinupformbutton" id="signindenied" onclick="signIn()">Sign in</button></p>
+    </div>
+{{end}}   
