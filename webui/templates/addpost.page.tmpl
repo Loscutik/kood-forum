@@ -11,10 +11,9 @@
                 <input type="text" id="PostTopic" name="theme" placeholder="Header"><br><br>
                 <textarea id="textarea_newpost" name="content" placeholder="Enter your text here..."></textarea><br><br>
                 <div id="choosepostcategory">
-                <label for="checkbox">Choose tags:</label><br>
+                <label for="checkbox">Choose tags:</label><br><br>
                 {{range .Categories}}
-                    <input type="checkbox" id = {{.ID}} class="categories" name="categoriesID"  value={{.ID}}>
-                    <label for="cats">{{.Name}}</label><br>
+                    <label class="categorylabel"><input type="checkbox" id = {{.ID}} class="categories" name="categoriesID" value={{.ID}}>{{.Name}}</label>
                 {{end}}
                 </div>
                 <button id="submitpost" class="signinupformbutton" formaction="/post/create" formmethod="post" onclick="Up()">Create post</button>
