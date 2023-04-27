@@ -1,3 +1,4 @@
 - add to html the creating date {{.Message.DateCreate.Date}}
 
-- make beautiful checkboxes
+- make beautiful checkboxes with toggle buttons for posts/like/dislike filter
+- add a JavaScript check for checkboxes in the "Add post" menu.
