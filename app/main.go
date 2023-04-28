@@ -13,6 +13,8 @@ import (
 
 	"forum/model"
 	"forum/model/sqlpkg"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // const (
@@ -28,8 +30,8 @@ type application struct {
 
 func main() {
 	// Creates logs of what happened
-	errLog := log.New(os.Stderr, "ERROR: ", log.Ldate|log.Ltime)                // Creates logs of errors
-	infoLogFile, err := os.OpenFile("info.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o664) 
+	errLog := log.New(os.Stderr, "ERROR: ", log.Ldate|log.Ltime) // Creates logs of errors
+	infoLogFile, err := os.OpenFile("info.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o664)
 	if err != nil {
 		errLog.Printf("Cannot open a log file. Error is %s\nStdout will be used for the info log ", err)
 		infoLogFile = os.Stdout
@@ -46,7 +48,12 @@ func main() {
 	var db *sql.DB
 	_, err = os.Stat("forumDB.db")
 	if errors.Is(err, os.ErrNotExist) {
-		db, err = sqlpkg.CreateDB("forumDB.db", model.ADM_NAME, model.ADM_EMAIL, model.ADM_PASS)
+		hashPassword, err := bcrypt.GenerateFromPassword([]byte(model.ADM_PASS), 8)
+		if err != nil {
+			errLog.Fatal("password crypting failed: ", err)
+			return
+		}
+		db, err = sqlpkg.CreateDB("forumDB.db", model.ADM_NAME, model.ADM_EMAIL, string(hashPassword))
 		if err != nil {
 			errLog.Fatal(err)
 		}

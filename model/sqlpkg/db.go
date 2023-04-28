@@ -9,6 +9,7 @@ import (
 	"forum/model"
 
 	"github.com/mattn/go-sqlite3"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type ForumModel struct {
@@ -51,6 +52,15 @@ func CreateDB(name, admName, admEmail, admPass string) (*sql.DB, error) {
 	err = sqlconn.AuthUserAdd("webuser", "webuser", false)
 	if err != nil {
 		return nil, err
+	}
+
+	hashPassword1, err := bcrypt.GenerateFromPassword([]byte("test1"), 8)
+	if err != nil {
+		return nil, fmt.Errorf("password crypting failed: %v", err)
+	}
+	hashPassword2, err := bcrypt.GenerateFromPassword([]byte("test2"), 8)
+	if err != nil {
+		return nil, fmt.Errorf("password crypting failed: %v", err)
 	}
 
 	q := `
@@ -114,8 +124,8 @@ func CreateDB(name, admName, admEmail, admPass string) (*sql.DB, error) {
 		INSERT INTO categories (name) VALUES (?), (?), (?);
 		
 		--!!!!! tests
-		INSERT INTO users (name,email,password, dateCreate) VALUES ("test1","test1@forum","tst1","2023-03-20 09:41:04.656479916+00:00");
-		INSERT INTO users (name,email,password, dateCreate) VALUES ("test2","test2@forum","tst1","2023-03-20 09:52:04.656479916+00:00");
+		INSERT INTO users (name,email,password, dateCreate) VALUES ("test1","test1@forum",?,"2023-03-20 09:41:04.656479916+00:00");
+		INSERT INTO users (name,email,password, dateCreate) VALUES ("test2","test2@forum",?,"2023-03-20 09:52:04.656479916+00:00");
 		INSERT INTO posts (theme,content,authorID, dateCreate) VALUES ("cats", "cats are cute", 1, "2023-03-20 15:41:04.656479916+00:00");
 		INSERT INTO posts (theme,content,authorID, dateCreate) VALUES ("dogs", "dogs are funny", 2, "2023-03-21 14:41:04.656479916+00:00");
 		INSERT INTO posts (theme,content,authorID, dateCreate) VALUES ("My cat", "She is the best", 3, "2023-03-22 10:41:04.656479916+00:00");
@@ -144,7 +154,7 @@ func CreateDB(name, admName, admEmail, admPass string) (*sql.DB, error) {
 		INSERT INTO post_categories (categoryID, postID) VALUES (3,4);
 		INSERT INTO post_categories (categoryID, postID) VALUES (3,5);
 		
-	`
+	` 
 	// use a  transaction
 	tx, err := db.Begin()
 	if err != nil {
@@ -152,7 +162,7 @@ func CreateDB(name, admName, admEmail, admPass string) (*sql.DB, error) {
 	}
 
 	// try exec transaction
-	_, errExec := tx.Exec(q, admName, admEmail, admPass, time.Now(), "cats", "dogs", "pets")
+	_, errExec := tx.Exec(q, admName, admEmail, admPass, time.Now(), "cats", "dogs", "pets", hashPassword1,hashPassword2)
 	if errExec != nil {
 		errRoll := tx.Rollback()
 		if errRoll != nil {
@@ -198,7 +208,7 @@ func (f *ForumModel) checkExisting(table, field, value string) error {
 }
 
 /*
-checks the res and returns error=nil if only 1 row had been affected, 
+checks the res and returns error=nil if only 1 row had been affected,
 in the other cases returns  ErrNoRecord (for 0 rows), or ErrTooManyRecords (for more than 1)
 */
 func (f *ForumModel) checkUnique(res sql.Result) error {
