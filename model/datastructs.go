@@ -73,7 +73,7 @@ type Comment struct {
 
 type Filter struct {
 	CategoryID []int
-	AuthorID, LikedByUserID int
+	AuthorID, LikedByUserID, DisLikedByUserID int
 }
 
 /*

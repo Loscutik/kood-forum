@@ -198,7 +198,7 @@ func (f *ForumModel) checkExisting(table, field, value string) error {
 }
 
 /*
-check the res and returns error=nil if only 1 row had been affected, 
+checks the res and returns error=nil if only 1 row had been affected, 
 in the other cases returns  ErrNoRecord (for 0 rows), or ErrTooManyRecords (for more than 1)
 */
 func (f *ForumModel) checkUnique(res sql.Result) error {

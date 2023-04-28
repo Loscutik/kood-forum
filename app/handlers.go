@@ -17,8 +17,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// TODO forbiden.html is needed
-
 const EXP_SESSION = 1200
 
 // form fields
@@ -30,15 +28,24 @@ const (
 	F_AUTHORID     = "authorID"
 	F_THEME        = "theme"
 	F_CATEGORIESID = "categoriesID"
-	F_MESSAGEID    = "messageID"
-	F_FROMURL      = "fromURL"
-	F_LIKE         = "like"
 )
+
+type likesOwner struct {
+	Post, Comment string
+}
+
+var defaultLikesOwner = &likesOwner{model.POSTS_LIKES, model.COMMENTS_LIKES}
 
 /*
 The handler of the main page. Route: /. Methods: GET. Template: home
 */
 func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) {
+	const(
+		AUTHOR="author"
+		LIKEBY="likedby"
+		DISLIKEBY="dislikedby"
+	)
+	
 	if r.URL.Path != "/" {
 		app.NotFound(w, r)
 		return
@@ -76,12 +83,16 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 		LikedByUserID: 0,
 	}
 	if ses.IsLoggedin() {
-		switch {
-		case uQ.Get("author") != "":
+		if uQ.Get(AUTHOR) != "" {
 			filter.AuthorID = ses.User.ID
-		case uQ.Get("likedby") != "":
+		}
+		if uQ.Get(LIKEBY) != "" {
 			filter.LikedByUserID = ses.User.ID
 		}
+		if uQ.Get(DISLIKEBY) != "" {
+			filter.DisLikedByUserID = ses.User.ID
+		}
+
 	}
 	posts, err := app.forumData.GetPosts(filter)
 	if err != nil {
@@ -100,7 +111,8 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 		Session    *session
 		Posts      []*model.Post
 		Categories []*model.Category
-	}{Session: ses, Posts: posts, Categories: categories}
+		LikesOwner *likesOwner
+	}{Session: ses, Posts: posts, Categories: categories, LikesOwner: defaultLikesOwner}
 	// Assembling the page from templates
 	app.executeTemplate(w, r, "home", output)
 }
@@ -431,21 +443,21 @@ func (app *application) settingsPageHandler(w http.ResponseWriter, r *http.Reque
 		email := r.PostFormValue(F_EMAIL)
 		password := r.PostFormValue(F_PASSWORD)
 		if email == "" && password == "" {
-			app.ClientError(w, r, http.StatusBadRequest, "nothing to change") 
+			app.ClientError(w, r, http.StatusBadRequest, "nothing to change")
 			return
 		}
 
 		// check email
 		if email != "" {
 			if !regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`).Match([]byte(email)) {
-				w.Write([]byte("wrong email")) 
+				w.Write([]byte("wrong email"))
 				return
 			}
 
 			err = app.forumData.ChangeUsersEmail(ses.User.ID, email)
 			if err != nil {
 				if errors.Is(err, model.ErrUniqueUserEmail) {
-					w.Write([]byte("the email already exists")) 
+					w.Write([]byte("the email already exists"))
 					return
 				} else {
 					app.ServerError(w, r, "changing user's email failed", err)
@@ -453,7 +465,7 @@ func (app *application) settingsPageHandler(w http.ResponseWriter, r *http.Reque
 				}
 			}
 
-			w.Write([]byte("the email has been successfully changed")) 
+			w.Write([]byte("the email has been successfully changed"))
 			return
 		}
 		if password != "" {
@@ -495,7 +507,7 @@ func (app *application) postPageHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// get post id
+	// get the post id
 	const prefix = "/post/p"
 	stringID := strings.TrimPrefix(r.URL.Path, prefix)
 	if stringID == r.URL.Path { // if the prefix doesn't exist
@@ -568,9 +580,10 @@ func (app *application) postPageHandler(w http.ResponseWriter, r *http.Request) 
 
 	// create a page
 	output := &struct {
-		Session *session
-		Post    *model.Post
-	}{Session: ses, Post: post}
+		Session    *session
+		Post       *model.Post
+		LikesOwner *likesOwner
+	}{Session: ses, Post: post, LikesOwner: defaultLikesOwner}
 
 	app.executeTemplate(w, r, "post", output)
 }

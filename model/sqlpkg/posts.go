@@ -203,7 +203,12 @@ func (f *ForumModel) GetPosts(filter *model.Filter) ([]*model.Post, error) {
 				condition += ` p.id IN (SELECT messageID FROM posts_likes pl  WHERE pl.userID = ? AND pl.like=true) AND `
 				arguments = append(arguments, filter.LikedByUserID)
 			}
-
+			
+			if filter.DisLikedByUserID != 0 {
+				condition += ` p.id IN (SELECT messageID FROM posts_likes pl  WHERE pl.userID = ? AND pl.like=false) AND `
+				arguments = append(arguments, filter.DisLikedByUserID)
+			}
+			
 			condition = strings.TrimSuffix(condition, `AND `)
 			return f.getPostsByCondition(condition, arguments)
 		}
