@@ -39,7 +39,7 @@ func (app *application) MethodNotAllowed(w http.ResponseWriter, r *http.Request,
 		panic("no methods is given to func MethodNotAllowed")
 	}
 	allowdeString :=allowedMethods[0]
-	for i := 0; i < len(allowedMethods); i++ {
+	for i := 1; i < len(allowedMethods); i++ {
 		allowdeString+=", "+allowedMethods[i]
 	}
 	

@@ -124,33 +124,12 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 the signup page.  Route: /signup. Methods: POST. Template: signup
 */
 func (app *application) signupPageHandler(w http.ResponseWriter, r *http.Request) {
-	// only POST method is allowed
-	if r.Method != http.MethodPost {
-		app.MethodNotAllowed(w, r, http.MethodPost)
-		return
-	}
 
-	ses, err := app.checkLoggedin(w, r)
-	if err != nil {
-		// checkLoggedin has already written error status to w
-		return
-	}
-	if ses.LoginStatus == loggedin {
-		w.Header().Add("Location", "/")
-		w.WriteHeader(204)
-		return
-	}
-	if ses.LoginStatus == experied {
-		w.Header().Add("Location", "/login")
-		w.WriteHeader(204)
-		return
-	}
-
-	// continue only if it's notloggedin
+	// only if it's notloggedin - needs wrapper
 
 	// try to add a user
 	// get data from a form
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		app.ServerError(w, r, "parsing form error", err)
 		return
@@ -285,26 +264,11 @@ func (app *application) signupSuccessPageHandler(w http.ResponseWriter, r *http.
 the login page. Route: /login. Methods: POST. Template: signin
 */
 func (app *application) signinPageHandler(w http.ResponseWriter, r *http.Request) {
-	// only POST method is allowed
-	if r.Method != http.MethodPost {
-		app.MethodNotAllowed(w, r, http.MethodPost)
-		return
-	}
+	
 
-	ses, err := app.checkLoggedin(w, r)
-	if err != nil {
-		// checkLoggedin has already written error status to w
-		return
-	}
-	if ses.IsLoggedin() {
-		w.Header().Add("Location", "/")
-		w.WriteHeader(204)
-		return
-	}
-
-	// continue if it's neither notloggedin nor expiried
+	// only if it's notloggedin - needs wrapper
 	// try to add a user
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		app.ServerError(w, r, "parsing form error", err)
 		return

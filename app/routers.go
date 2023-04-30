@@ -6,9 +6,9 @@ func (app *application) routers() *http.ServeMux {
 	mux := http.NewServeMux()
 	
 	mux.HandleFunc("/", app.homePageHandler)
-	mux.HandleFunc("/signup", app.signupPageHandler)
+	mux.Handle("/signup", app.Signs(app.signupPageHandler, http.MethodPost))
 	mux.HandleFunc("/signup/success", app.signupSuccessPageHandler)
-	mux.HandleFunc("/login", app.signinPageHandler)
+	mux.Handle("/login", app.Signs(app.signinPageHandler, http.MethodPost))
 	mux.HandleFunc("/userinfo/", app.userPageHandler)
 	mux.HandleFunc("/settings", app.settingsPageHandler)
 	mux.HandleFunc("/post/", app.postPageHandler)
