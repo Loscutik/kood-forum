@@ -81,6 +81,7 @@ function checkFormSignin(){
 function changingForm(formID, warningID) {
   document.getElementById(formID).addEventListener("input", (event) =>{
     document.getElementById(warningID).style.display="none";
+    document.getElementById(warningID).style.color="rgb(239, 77, 93)";
   })
 }
 
@@ -250,8 +251,6 @@ const sendPost = async  (data, url, warningElm, checkSpecialCase)=>{
       if (text.length!=0){
         if(!text.startsWith("error:")){
           warningElm.style.color="rgb(57, 202, 62)"
-        }else{
-          warningElm.style.color="rgb(239, 77, 93)"
         }
         warningElm.innerHTML=text;
         warningElm.style.display="block";
