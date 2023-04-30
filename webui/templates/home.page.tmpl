@@ -14,21 +14,35 @@
                 {{end}}
                  {{if .Session.IsLoggedin}}
                 <p>Show only:</p>
-                <input type="checkbox" class="cateories" name="author" value="{{.Session.User.ID}}">
-                <label for="MyPosts">My posts</label><br>
-                <input type="checkbox" class="cateories" name="likedby" value="{{.Session.User.ID}}">
-                <label for="MyLikes">My likes</label><br>
-                <input type="checkbox" class="cateories" name="dislikedby" value={{.Session.User.ID}}>
-                <label for="MyDislikes">My dislikes</label><br><br><br>
+                <div class="switches">
+                <label for="MyPosts" class="labls">My posts</label>
+                <label class="switch">
+                    <input type="checkbox" name="author" value="{{.Session.User.ID}}">
+                    <span class="slider round"></span>
+                </label><br>
+                </div>
+                <div class="switches">
+                <label for="MyLikes" class="labls">My likes</label>
+                <label class="switch" id="liks">
+                    <input type="checkbox" name="likedby" value="{{.Session.User.ID}}">
+                    <span class="slider round"></span>
+                  </label><br>
+                </div>
+                <div class="switches">
+                <label for="MyDislikes" class="labls">My dislikes</label>
+                <label class="switch" id="disliks">
+                    <input type="checkbox" name="dislikedby" value="{{.Session.User.ID}}">
+                    <span class="slider round"></span>
+                  </label><br>
+                </div>
                 {{end}}
-                <input type="submit" value="Filter" class="signinupformbutton">
+                <input type="submit" value="Filter" id="filtr" class="signinupformbutton">
             </form>
         </div>
     </div>
 
 
     {{$loggedin := .Session.IsLoggedin}}
-    {{$likesPost := .LikesOwner.Post}}
     
         {{range .Posts}}
         <div class="post">
@@ -41,8 +55,8 @@
             </a>
             <div id="reactions">
                 {{if $loggedin}}
-                    <span id="{{.ID}}-posts_likes-true-n">{{index .Message.Likes 0}}</span><button id="{{.ID}}-posts_likes-true" messageID={{.ID}} messageType={{$likesPost}} like="true" class="likeicon" name="post-true" onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
-                    <span id="{{.ID}}-posts_likes-false-n">{{index .Message.Likes 1}}</span><button id="{{.ID}}-posts_likes-false" messageID={{.ID}} messageType={{$likesPost}} like="false" class="likeicon" name="post-false" onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
+                    <span id="{{.ID}}-posts_likes-true-n">{{index .Message.Likes 0}}</span><button id="{{.ID}}-posts_likes-true" messageID={{.ID}} messageType="posts_likes" like="true" class="likeicon" name="post-true" onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                    <span id="{{.ID}}-posts_likes-false-n">{{index .Message.Likes 1}}</span><button id="{{.ID}}-posts_likes-false" messageID={{.ID}} messageType="posts_likes" like="false" class="likeicon" name="post-false" onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
                 {{else}} 
                     <span id="{{.ID}}-posts_likes-true-n">{{index .Message.Likes 0}}</span><button id="{{.ID}}-posts_likes-true" class="likeicon not-active-link" name="post-true"><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
                     <span id="{{.ID}}-posts_likes-false-n">{{index .Message.Likes 1}}</span><button id="{{.ID}}-posts_likes-false" class="likeicon not-active-link" name="post-false"><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></img></button>
