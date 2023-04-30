@@ -373,3 +373,12 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   });
 }, false);
+
+function CheckCheckBox() { // Дичь, сделать нормально.
+  if (document.getElementsByClass('.categorylabel').checked) {
+    return true
+} else {
+    alert("You didn't check it!");
+    return false
+}
+}
