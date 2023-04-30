@@ -40,3 +40,9 @@ func (app *application) NotAuth(h http.Handler) http.Handler {
 		h.ServeHTTP(w, r)
 	})
 }
+
+func (app *application) Signs(h http.Handler, allowedMethods ...string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		app.MustMethods(app.NotAuth(h),allowedMethods...).ServeHTTP(w,r)
+	})
+}
