@@ -339,6 +339,7 @@ function validatePost() {
     document.getElementById("textarea_newpost").style.borderRadius = "3px";
     document.getElementById("textarea_newpost").placeholder = "Please enter the text!";
   }
+
   if (x == "" || y == "") {
     return false
   }
@@ -358,6 +359,12 @@ function CheckValidatePost() {
     document.getElementById("textarea_newpost").style.borderRadius = "3px";
     document.getElementById("textarea_newpost").placeholder = "Enter your text here...";
   }
+  if (CheckCheckBox() == false) {
+    document.querySelectorAll('.categorylabel').forEach(el => {
+      el.style.border = "solid rgb(255, 193, 47) 2px";
+    })
+    document.getElementById("choosetags").style.color = "rgb(0, 0, 0)";
+  }
 }
 
 function Up() {
@@ -374,11 +381,20 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 }, false);
 
-function CheckCheckBox() { // Дичь, сделать нормально.
-  if (document.getElementsByClass('.categorylabel').checked) {
-    return true
-} else {
-    alert("You didn't check it!");
-    return false
-}
+function CheckCheckBox() {
+  var t = false;
+  // Дичь, сделать нормально.
+  document.querySelectorAll('.categories').forEach(el => {
+   if (el.checked == true) {
+      t = true
+   }
+  })
+  if (t == false) {
+    document.querySelectorAll('.categorylabel').forEach(el => {
+      el.style.border = "solid rgb(232, 0, 0) 2px";
+    })
+    document.getElementById("choosetags").style.color = "rgb(255, 0, 0)";
+  return false
+  }
+  return true
 }
