@@ -34,7 +34,15 @@ func (app *application) ClientError(w http.ResponseWriter, r *http.Request, errS
 	http.Error(w, "ERROR: "+http.StatusText(errStatus), errStatus)
 }
 
-func (app *application) MethodNotAllowed(w http.ResponseWriter, r *http.Request, allowdeString string) {
+func (app *application) MethodNotAllowed(w http.ResponseWriter, r *http.Request, allowedMethods... string) {
+	if allowedMethods==nil{
+		panic("no methods is given to func MethodNotAllowed")
+	}
+	allowdeString :=allowedMethods[0]
+	for i := 0; i < len(allowedMethods); i++ {
+		allowdeString+=", "+allowedMethods[i]
+	}
+	
 	w.Header().Set("Allow", allowdeString)
 	app.ClientError(w, r, http.StatusMethodNotAllowed, fmt.Sprintf("using the method %s to go to a page %s", r.Method, r.URL))
 }

@@ -62,7 +62,7 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 		// checkLoggedin has already written error status to w
 		return
 	}
-
+ 
 	uQ := r.URL.Query()
 	var categoryID []int
 	if len(uQ[F_CATEGORIESID]) > 0 {
