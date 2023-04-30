@@ -10,7 +10,7 @@ This is a project of a web forum, which contains such things as:
 
 Before we start, here you can find the [audit](https://github.com/01-edu/public/tree/master/subjects/forum/audit) questions. Are you ready? Let's go!
 
-How to run the app?
+## How to run the app?
 
 At first, [DOCKER]
 
