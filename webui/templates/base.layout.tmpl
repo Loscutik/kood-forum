@@ -72,10 +72,10 @@
     {{if .Session.IsLoggedin}}
         <script>openSidepanel()</script>
     {{else}}
-        <script>changingFormSignup()</script>
-        <script>changingFormSignin()</script>
         <script>checkFormSignup()</script>
         <script>checkFormSignin()</script>
+        <script>changingForm("signup_form", "warning-up")</script>
+        <script>changingForm("signin_form", "warning-in")</script>
     {{end}}
     <footer id="footer">
         <p id="footertext">Created with love in 2023</p>

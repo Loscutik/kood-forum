@@ -15,11 +15,14 @@
             <form id="changepassword">
                 <input type="text" class="password" id="password" name="password" placeholder="new password"><br><br>
                 <input type="text" class="password" id="confirm_password" name="password" placeholder="confirm password"><br><br>
-                 <span id="warning_password" class="warning">passwords do not match</span><br>
+                <span id="warning_password" class="warning">passwords do not match</span><br>
+                <input type="checkbox" onclick="ShowPassword()">Show Password <br><br>
                 <input type="button" value="Change" id="submit_password" class="signinupformbutton"><br>
             </form>
        </div>
     </div>
 
     <script>checkFormSettings()</script>
+    <script>changingForm("changeemail","warning_email")</script>
+    <script>changingForm("changepassword","warning_password")</script>
  {{end}}  

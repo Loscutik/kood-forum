@@ -63,6 +63,7 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
  
+	// get category filters
 	uQ := r.URL.Query()
 	var categoryID []int
 	if len(uQ[F_CATEGORIESID]) > 0 {
@@ -82,6 +83,8 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 		CategoryID:    categoryID,
 		LikedByUserID: 0,
 	}
+
+	// get author's filters
 	if ses.IsLoggedin() {
 		if uQ.Get(AUTHOR) != "" {
 			filter.AuthorID = ses.User.ID
@@ -163,7 +166,7 @@ func (app *application) signupPageHandler(w http.ResponseWriter, r *http.Request
 
 	// check email
 	if !regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`).Match([]byte(email)) {
-		w.Write([]byte("wrong email"))
+		w.Write([]byte("error: wrong email"))
 		return
 	}
 
@@ -203,9 +206,9 @@ func (app *application) signupPageHandler(w http.ResponseWriter, r *http.Request
 		var message string
 		switch err {
 		case model.ErrUniqueUserName:
-			message = "the name already exists"
+			message = "error: the name already exists"
 		case model.ErrUniqueUserEmail:
-			message = "the email already exists"
+			message = "error: the email already exists"
 		default:
 			app.ServerError(w, r, "adding the user failed", err)
 			return
@@ -317,7 +320,7 @@ func (app *application) signinPageHandler(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		if errors.Is(err, model.ErrNoRecord) { // the user doesn't exist
 			// write a message for JS
-			w.Write([]byte("wrong login"))
+			w.Write([]byte("error: wrong login"))
 			return
 		}
 		// any other errors:
@@ -357,7 +360,7 @@ func (app *application) signinPageHandler(w http.ResponseWriter, r *http.Request
 
 	} else { // the password is wrong - error mesage and respond with the filled form
 		// write a message for JS
-		w.Write([]byte("wrong password"))
+		w.Write([]byte("error: wrong password"))
 	}
 }
 
@@ -450,14 +453,14 @@ func (app *application) settingsPageHandler(w http.ResponseWriter, r *http.Reque
 		// check email
 		if email != "" {
 			if !regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`).Match([]byte(email)) {
-				w.Write([]byte("wrong email"))
+				w.Write([]byte("error: wrong email"))
 				return
 			}
 
 			err = app.forumData.ChangeUsersEmail(ses.User.ID, email)
 			if err != nil {
 				if errors.Is(err, model.ErrUniqueUserEmail) {
-					w.Write([]byte("the email already exists"))
+					w.Write([]byte("error: the email already exists"))
 					return
 				} else {
 					app.ServerError(w, r, "changing user's email failed", err)
@@ -493,7 +496,7 @@ func (app *application) settingsPageHandler(w http.ResponseWriter, r *http.Reque
 		app.executeTemplate(w, r, "settings", output)
 	default:
 		// only GET or PUT methods are allowed
-		app.MethodNotAllowed(w, r, http.MethodGet+", "+http.MethodPost)
+		app.MethodNotAllowed(w, r, http.MethodGet,http.MethodPost)
 	}
 }
 
@@ -503,7 +506,7 @@ the post's page. Route: /post/p{{Id}}. Methods: GET, POST. Template: post
 func (app *application) postPageHandler(w http.ResponseWriter, r *http.Request) {
 	// only GET or PUT methods are allowed
 	if r.Method != http.MethodGet && r.Method != http.MethodPost {
-		app.MethodNotAllowed(w, r, http.MethodGet+", "+http.MethodPost)
+		app.MethodNotAllowed(w, r, http.MethodGet,http.MethodPost)
 		return
 	}
 

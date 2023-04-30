@@ -269,3 +269,6 @@ INFO:  2023/04/28 19:21:56 main.go:81: Starting server at port 8080
 INFO:  2023/04/28 19:25:01 main.go:81: Starting server at port 8080
 INFO:  2023/04/28 20:03:46 main.go:60: DB has created in
 INFO:  2023/04/28 20:03:46 main.go:88: Starting server at port 8080
+INFO:  2023/04/30 19:34:11 main.go:88: Starting server at port 8080
+INFO:  2023/04/30 19:34:22 main.go:88: Starting server at port 4000
+INFO:  2023/04/30 19:50:48 main.go:88: Starting server at port 4000

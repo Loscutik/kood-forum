@@ -37,10 +37,10 @@ function checkFormSignup(){
 
   submitButton.addEventListener("click", (event) => {
     if (email.value==null ||name.value==null ||password.value==null ||confirmPassword.value==null|| email.value=="" || name.value=="" ||password.value=="" ||confirmPassword.value==""){
-      warning.innerHTML="fill all fields";
+      warning.innerHTML="error: fill all fields";
       warning.style.display="block";
     }else if (password.value!=confirmPassword.value){
-      warning.innerHTML="passwords do not match";
+      warning.innerHTML="error: passwords do not match";
       warning.style.display="block";
     }else{
       // send data by post
@@ -63,7 +63,7 @@ function checkFormSignin(){
 
   submitButton.addEventListener("click", (event) => {
     if (name.value==null ||password.value==null || name.value=="" ||password.value=="" ){
-      warning.innerHTML="fill all fields";
+      warning.innerHTML="error: fill all fields";
       warning.style.display="block";
     }else{
       // send data by post
@@ -76,6 +76,12 @@ function checkFormSignin(){
       sendPost(data, "/login", warning, goIfSuccess)
     }
   });
+}
+
+function changingForm(formID, warningID) {
+  document.getElementById(formID).addEventListener("change", (event) =>{
+    document.getElementById(warningID).style.display="none";
+  })
 }
 
 function changingFormSignup() {
@@ -174,7 +180,7 @@ function checkFormSettings(){
   
   submitEmail.addEventListener("click", event => {
     if (email.value==null || email.value==""){
-      warningEmail.innerHTML="fill all fields";
+      warningEmail.innerHTML="error: fill all fields";
       warningEmail.style.display="block";
     }else{
       // send data by post
@@ -189,10 +195,10 @@ function checkFormSettings(){
 
   submitPassword.addEventListener("click", event => {
     if (password.value==null ||confirmPassword.value==null || password.value=="" || confirmPassword.value==""){
-      warningPassword.innerHTML="fill all fields";
+      warningPassword.innerHTML="error: fill all fields";
       warningPassword.style.display="block";
     }else if (password.value!=confirmPassword.value){
-      warningPassword.innerHTML="passwords do not match";
+      warningPassword.innerHTML="error: passwords do not match";
       warningPassword.style.display="block";
     }else{
       // send data by post
@@ -242,6 +248,11 @@ const sendPost = async  (data, url, warningElm, checkSpecialCase)=>{
       checkSpecialCase(res);
       const text = await res.text();
       if (text.length!=0){
+        if(!text.startsWith("error:")){
+          warningElm.style.color="rgb(57, 202, 62)"
+        }else{
+          warningElm.style.color="rgb(239, 77, 93)"
+        }
         warningElm.innerHTML=text;
         warningElm.style.display="block";
       }

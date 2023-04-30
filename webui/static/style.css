@@ -132,12 +132,7 @@
     font-size: 18px;
     color: rgba(0, 0, 0, 0.3);
 }
-#warning_email {
-    color: rgba(0, 0, 0, 0.7);
-}
-#warning_password {
-    color: rgba(0, 0, 0, 0.7);
-}
+
 #signindenied {
     margin-left: 280px;
     margin-bottom: 70px;
