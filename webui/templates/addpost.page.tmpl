@@ -6,7 +6,7 @@
     
     <div>
         <div class="post">
-            <form id="pform" name="pform" onsubmit="event.preventDefault(); validatePost(); CheckCheckBox();" onclick="CheckValidatePost();">
+            <form id="pform" name="pform" action="/post/create" method="post" onclick="CheckValidatePost();">
                 <input  id="invisible" name="authorID" value="{{.Session.User.ID}}"></input>
                 <input type="text" id="PostTopic" name="theme" placeholder="Header"><br><br>
                 <textarea id="textarea_newpost" name="content" placeholder="Enter your text here..."></textarea><br><br>
@@ -16,7 +16,7 @@
                     <label class="categorylabel"><input type="checkbox" id = {{.ID}} class="categories" name="categoriesID" value={{.ID}}>{{.Name}}</label>
                 {{end}}
                 </div>
-                <button id="submitpost" class="signinupformbutton" formaction="/post/create" formmethod="post" onclick="Up()">Create post</button>
+                <button type="submit" id="submitpost" class="signinupformbutton" onclick="Up()">Create post</button>
             </form>
         </div>
     </div>
