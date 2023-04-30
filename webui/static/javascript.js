@@ -50,45 +50,7 @@ function checkFormSignup(){
         name: name.value,
         password: password.value,
       };
-      
       sendPost(data, "/signup", warning, goIfSuccess);
-      /*
-      // create a request with form-data
-      const urlEncodedDataPairs = [];
-      for (const [name, value] of Object.entries(data)) {
-        urlEncodedDataPairs.push(`${encodeURIComponent(name)}=${encodeURIComponent(value)}`);
-      }
-    
-      // Combine the pairs into a single string and replace all %-encoded spaces to
-      // the '+' character; matches the behavior of browser form submissions.
-      const urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
-      const headers = new Headers();
-      headers.append('Content-Type', 'application/x-www-form-urlencoded');
-
-      fetch("/signup", {
-      method: "POST",
-      headers: headers,
-      credentials: "same-origin",
-      redirect: "follow", 
-      body: urlEncodedData
-      }).then((res) => {
-        if (res.status==204){
-          console.log ("red=",res.headers.get("Location"));
-          window.location.href =res.headers.get("Location");
-          return ""
-        }
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
-        
-        return res.text(); 
-      })
-      .then((text) =>{
-        if (text.length!=0){
-          warning.innerHTML=text;
-          warning.style.display="block";
-        }
-      });*/
     }
   });
 }
@@ -112,44 +74,6 @@ function checkFormSignin(){
       };
 
       sendPost(data, "/login", warning, goIfSuccess)
-      
-      /*
-      // create a request with form-data
-      const urlEncodedDataPairs = [];
-      for (const [name, value] of Object.entries(data)) {
-        urlEncodedDataPairs.push(`${encodeURIComponent(name)}=${encodeURIComponent(value)}`);
-      }
-    
-      // Combine the pairs into a single string and replace all %-encoded spaces to
-      // the '+' character; matches the behavior of browser form submissions.
-      const urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
-      const headers = new Headers();
-      headers.append('Content-Type', 'application/x-www-form-urlencoded');
-
-      fetch("/login", {
-      method: "POST",
-      headers: headers,
-      credentials: "same-origin",
-      redirect: "follow", 
-      body: urlEncodedData
-      }).then((res) => {
-        if (res.status==204){
-          console.log ("red=",res.headers.get("Location"));
-          window.location.href =res.headers.get("Location");
-          return ""
-        }
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
-        
-        return res.text(); 
-      })
-      .then((text) =>{
-        if (text.length!=0){
-          warning.innerHTML=text;
-          warning.style.display="block";
-        }
-      });*/
     }
   });
 }
@@ -359,7 +283,7 @@ function CheckValidatePost() {
     document.getElementById("textarea_newpost").style.borderRadius = "3px";
     document.getElementById("textarea_newpost").placeholder = "Enter your text here...";
   }
-  if (CheckCheckBox() == false) {
+  if (CheckCheckBox() == false ) {
     document.querySelectorAll('.categorylabel').forEach(el => {
       el.style.border = "solid rgb(255, 193, 47) 2px";
     })
@@ -368,22 +292,35 @@ function CheckValidatePost() {
 }
 
 function Up() {
-  if (validatePost() == false) {
+  if (validatePost() == false || CheckCheckBox() == false) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+
   document.querySelectorAll('.categorylabel').forEach(el => {
     el.addEventListener("click", function(ev){
       ev.target.classList.toggle("selected")
     })
   });
+
+  let pform = document.getElementById("pform")
+  if (pform){
+    document.getElementById("pform").addEventListener("submit", function(ev){
+      console.log(ev.target)
+      ev.preventDefault();
+      if (validatePost() && CheckCheckBox()){
+        ev.target.submit();
+      }
+    })
+  }
+
+
 }, false);
 
 function CheckCheckBox() {
   var t = false;
-  // Дичь, сделать нормально.
   document.querySelectorAll('.categories').forEach(el => {
    if (el.checked == true) {
       t = true
@@ -394,7 +331,7 @@ function CheckCheckBox() {
       el.style.border = "solid rgb(232, 0, 0) 2px";
     })
     document.getElementById("choosetags").style.color = "rgb(255, 0, 0)";
-  return false
+    return false
   }
   return true
 }
