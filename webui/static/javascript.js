@@ -79,7 +79,7 @@ function checkFormSignin(){
 }
 
 function changingForm(formID, warningID) {
-  document.getElementById(formID).addEventListener("change", (event) =>{
+  document.getElementById(formID).addEventListener("input", (event) =>{
     document.getElementById(warningID).style.display="none";
   })
 }
