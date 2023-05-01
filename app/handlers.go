@@ -30,11 +30,11 @@ const (
 	F_CATEGORIESID = "categoriesID"
 )
 
-type likesOwner struct {
+type likesStorage struct {
 	Post, Comment string
 }
 
-var defaultLikesOwner = &likesOwner{model.POSTS_LIKES, model.COMMENTS_LIKES}
+var defaultLikesStorage = &likesStorage{model.POSTS_LIKES, model.COMMENTS_LIKES}
 
 /*
 The handler of the main page. Route: /. Methods: GET. Template: home
@@ -82,6 +82,7 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 		AuthorID:      0,
 		CategoryID:    categoryID,
 		LikedByUserID: 0,
+		DisLikedByUserID: 0,
 	}
 
 	// get author's filters
@@ -114,8 +115,9 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 		Session    *session
 		Posts      []*model.Post
 		Categories []*model.Category
-		LikesOwner *likesOwner
-	}{Session: ses, Posts: posts, Categories: categories, LikesOwner: defaultLikesOwner}
+		Filter *model.Filter
+		LikesStorage *likesStorage
+	}{Session: ses, Posts: posts, Categories: categories, Filter: filter, LikesStorage: defaultLikesStorage}
 	// Assembling the page from templates
 	app.executeTemplate(w, r, "home", output)
 }
@@ -549,8 +551,8 @@ func (app *application) postPageHandler(w http.ResponseWriter, r *http.Request) 
 	output := &struct {
 		Session    *session
 		Post       *model.Post
-		LikesOwner *likesOwner
-	}{Session: ses, Post: post, LikesOwner: defaultLikesOwner}
+		LikesStorage *likesStorage
+	}{Session: ses, Post: post, LikesStorage: defaultLikesStorage}
 
 	app.executeTemplate(w, r, "post", output)
 }

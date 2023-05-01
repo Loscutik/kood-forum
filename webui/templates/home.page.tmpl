@@ -3,35 +3,35 @@
 {{define "title"}}Home{{end}}
 
 {{define "main"}}
-
+    {{$filter:= .Filter}}
     <div id="filters">
         <button id="openfiltersbutton" class="likeicon" onclick="openFilters()"><img class="likeicon" id="filterslogo" src="https://cdn-icons-png.flaticon.com/512/3161/3161370.png"></img><img class="likeicon" id="closefilterslogo" src="https://cdn-icons-png.flaticon.com/512/2734/2734822.png"></img></button>
         <div id="filterform" class="post" style="display:none">
             <form id="fform">
                 <p>Select a category:</p>
-                {{range .Categories}}
-                    <label class="categorylabel"><input type="checkbox" id = {{.ID}} class="categories" name="categoriesID" value={{.ID}}>{{.Name}}</label>
+                {{range  .Categories}}
+                    <label class="categorylabel {{if $filter.IsCheckedCategory .ID}}selected{{end}}"><input type="checkbox" id = {{.ID}} class="categories {{if $filter.IsCheckedCategory .ID}}selected{{end}}" name="categoriesID" value={{.ID}} {{if $filter.IsCheckedCategory .ID}}checked{{end}}>{{.Name}}</label>
                 {{end}}
                  {{if .Session.IsLoggedin}}
                 <p>Show only:</p>
                 <div class="switches">
                 <label for="MyPosts" class="labls">My posts</label>
                 <label class="switch">
-                    <input type="checkbox" name="author" value="{{.Session.User.ID}}">
+                    <input type="checkbox" {{if $filter.AuthorID}}checked{{end}} name="author" value="{{.Session.User.ID}}">
                     <span class="slider round"></span>
                 </label><br>
                 </div>
                 <div class="switches">
                 <label for="MyLikes" class="labls">My likes</label>
                 <label class="switch" id="liks">
-                    <input type="checkbox" name="likedby" value="{{.Session.User.ID}}">
+                    <input type="checkbox" {{if $filter.LikedByUserID}}checked{{end}} name="likedby" value="{{.Session.User.ID}}">
                     <span class="slider round"></span>
                   </label><br>
                 </div>
                 <div class="switches">
                 <label for="MyDislikes" class="labls">My dislikes</label>
                 <label class="switch" id="disliks">
-                    <input type="checkbox" name="dislikedby" value="{{.Session.User.ID}}">
+                    <input type="checkbox" {{if $filter.DisLikedByUserID}}checked{{end}} name="dislikedby" value="{{.Session.User.ID}}">
                     <span class="slider round"></span>
                   </label><br>
                 </div>

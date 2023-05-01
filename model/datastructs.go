@@ -53,11 +53,11 @@ type message struct {
 }
 
 type Post struct {
-	ID         int
-	Theme      string
-	Message    message
-	Categories []*Category
-	Comments   []*Comment
+	ID               int
+	Theme            string
+	Message          message
+	Categories       []*Category
+	Comments         []*Comment
 	CommentsQuantity int
 }
 
@@ -72,8 +72,17 @@ type Comment struct {
 }
 
 type Filter struct {
-	CategoryID []int
+	CategoryID                                []int
 	AuthorID, LikedByUserID, DisLikedByUserID int
+}
+
+func (f *Filter) IsCheckedCategory(id int) bool {
+	for _, c := range f.CategoryID {
+		if id == c {
+			return true
+		}
+	}
+	return false
 }
 
 /*
