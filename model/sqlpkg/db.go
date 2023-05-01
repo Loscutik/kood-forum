@@ -8,7 +8,7 @@ import (
 
 	"forum/model"
 
-	"github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -16,9 +16,9 @@ type ForumModel struct {
 	DB *sql.DB
 }
 
-func OpenDB(name string) (*sql.DB, error) {
+func OpenDB(name, user, pass string) (*sql.DB, error) {
 	// init pull (not connection)
-	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s?_auth&_auth_user=webuser&_auth_pass=webuser", name))
+	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s?_auth&_auth_user=%s&_auth_pass=%s", name, user, pass))
 	if err != nil {
 		return nil, err
 	}
@@ -42,17 +42,17 @@ func handleErrAndCloseDB(db *sql.DB, operation string, err error) error {
 
 func CreateDB(name, admName, admEmail, admPass string) (*sql.DB, error) {
 	// init pull (not connection)
-	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s?_auth&_auth_user=admin&_auth_pass=adminpass", name))
+	db, err := OpenDB(name, "admin", "adminpass")
 	if err != nil {
 		return nil, err
 	}
 
 	// create a not-admin user
-	var sqlconn *sqlite3.SQLiteConn
-	err = sqlconn.AuthUserAdd("webuser", "webuser", false)
-	if err != nil {
-		return nil, err
-	}
+	// var sqlconn *sqlite3.SQLiteConn
+	// err = sqlconn.AuthUserAdd("webuser", "webuser", false)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	hashPassword1, err := bcrypt.GenerateFromPassword([]byte("test1"), 8)
 	if err != nil {
@@ -121,18 +121,21 @@ func CreateDB(name, admName, admEmail, admPass string) (*sql.DB, error) {
 		CREATE INDEX userssession ON users (session);
 
 		INSERT INTO users (name,email,password, dateCreate) VALUES (?,?,?,?);
-		INSERT INTO categories (name) VALUES (?), (?), (?);
+		INSERT INTO categories (name) VALUES (?), (?), (?), (?);
 		
 		--!!!!! tests
 		INSERT INTO users (name,email,password, dateCreate) VALUES ("test1","test1@forum",?,"2023-03-20 09:41:04.656479916+00:00");
-		INSERT INTO users (name,email,password, dateCreate) VALUES ("test2","test2@forum",?,"2023-03-20 09:52:04.656479916+00:00");
-		INSERT INTO posts (theme,content,authorID, dateCreate) VALUES ("cats", "cats are cute", 1, "2023-03-20 15:41:04.656479916+00:00");
+		INSERT INTO users (name,email,password, dateCreate) VALUES ("test2","test2@forum",?,"2023-03-20 09:52:07.656479916+00:00");
+		INSERT INTO posts (theme,content,authorID, dateCreate) VALUES ("cats", "cats are cute", 1, "2023-03-20 15:41:42.656479916+00:00");
 		INSERT INTO posts (theme,content,authorID, dateCreate) VALUES ("dogs", "dogs are funny", 2, "2023-03-21 14:41:04.656479916+00:00");
-		INSERT INTO posts (theme,content,authorID, dateCreate) VALUES ("My cat", "She is the best", 3, "2023-03-22 10:41:04.656479916+00:00");
-		INSERT INTO posts (theme,content,authorID, dateCreate) VALUES ("My dog"," He is the best", 2, "2023-03-20 11:41:04.656479916+00:00");
-		INSERT INTO posts (theme,content,authorID, dateCreate) VALUES ("My parrot", "My parrot is a pirate", 1, "2023-03-22 11:41:04.656479916+00:00");
+		INSERT INTO posts (theme,content,authorID, dateCreate) VALUES ("My cat", "She is the best", 3, "2023-03-22 10:41:23.656479916+00:00");
+		INSERT INTO posts (theme,content,authorID, dateCreate) VALUES ("My dog"," He is the best", 2, "2023-03-22 11:41:14.656479916+00:00");
+		INSERT INTO posts (theme,content,authorID, dateCreate) VALUES ("My parrot", "My parrot is a pirate", 1, "2023-03-23 11:41:52.656479916+00:00");
+		INSERT INTO posts (theme,content,authorID, dateCreate) VALUES ("Seamus", "My dog is such a cheeky monkey", 1, "2023-03-24 14:41:00.656479916+00:00");
+		INSERT INTO posts (theme,content,authorID, dateCreate) VALUES ("Wise Kaa", "How many monkeys can a python swallow in one gulp?", 3, "2023-03-24 21:25:25.656479916+00:00");
 		
-		INSERT INTO comments (content,authorID, dateCreate,postID) VALUES ("No, mine", 1, "2023-03-22 11:41:04.656479916+00:00",3);
+		INSERT INTO comments (content,authorID, dateCreate,postID) VALUES ("No, mine", 1, "2023-03-22 11:21:05.656479916+00:00",3);
+		INSERT INTO comments (content,authorID, dateCreate,postID) VALUES ("25, ish", 2, "2023-03-27 09:43:13.656479916+00:00",7);
 		
 		INSERT INTO posts_likes (userID, messageID, like) VALUES (2, 4, 0);
 		INSERT INTO posts_likes (userID, messageID, like) VALUES (2, 3, 0);
@@ -154,7 +157,9 @@ func CreateDB(name, admName, admEmail, admPass string) (*sql.DB, error) {
 		INSERT INTO post_categories (categoryID, postID) VALUES (3,4);
 		INSERT INTO post_categories (categoryID, postID) VALUES (3,5);
 		
-	` 
+
+		SELECT auth_user_add('webuser', 'webuser', 0);
+	`
 	// use a  transaction
 	tx, err := db.Begin()
 	if err != nil {
@@ -162,7 +167,7 @@ func CreateDB(name, admName, admEmail, admPass string) (*sql.DB, error) {
 	}
 
 	// try exec transaction
-	_, errExec := tx.Exec(q, admName, admEmail, admPass, time.Now(), "cats", "dogs", "pets", hashPassword1,hashPassword2)
+	_, errExec := tx.Exec(q, admName, admEmail, admPass, time.Now(), "cats", "dogs", "pets", "savage", hashPassword1, hashPassword2)
 	if errExec != nil {
 		errRoll := tx.Rollback()
 		if errRoll != nil {
@@ -182,14 +187,8 @@ func CreateDB(name, admName, admEmail, admPass string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	// open the DB with no admin user
-	db, err = sql.Open("sqlite3", fmt.Sprintf("file:%s?_auth&_auth_user=webuser&_auth_pass=webuser", name))
-	if err != nil {
-		return nil, err
-	}
-
-	// check connection (create and check)
-	err = db.Ping()
+	// open the DB with no admin user and check the connection
+	db, err = OpenDB(name, "webuser", "webuser")
 	if err != nil {
 		return nil, err
 	}

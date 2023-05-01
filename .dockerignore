@@ -1,0 +1,9 @@
+.git
+.gitignore
+node_modules
+info.log
+*ocker*
+README.md
+LICENSE
+.vscode
+TODO*

@@ -59,7 +59,7 @@ func main() {
 		}
 		infoLog.Printf("DB has created in")
 	} else {
-		db, err = sqlpkg.OpenDB("forumDB.db")
+		db, err = sqlpkg.OpenDB("forumDB.db","webuser", "webuser")
 		if err != nil {
 			errLog.Fatal(err)
 		}

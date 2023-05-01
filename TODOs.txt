@@ -1,6 +1,7 @@
 - add to html the creating date {{.Message.DateCreate.Date}}
 
-- make beautiful checkboxes with toggle buttons for posts/like/dislike filter
-- add a JavaScript check for checkboxes in the "Add post" menu.
+! Docker: Does the project present no unused object?
 
-- crypt passwords during creating the base
+- show like/dislike pressed for the registred user
+
+-- keep filter boxes in chosen condition after submit filter

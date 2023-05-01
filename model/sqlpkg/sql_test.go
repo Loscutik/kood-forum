@@ -12,7 +12,7 @@ import (
 
 func TestCreateDB(t *testing.T) {
 	db, err := CreateDB("database.db", model.ADM_NAME, model.ADM_EMAIL, model.ADM_PASS)
-	// db, err := OpenDB("database.db")
+	// db, err := OpenDB("database.db","webuser","webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -48,7 +48,7 @@ func TestCreateDB(t *testing.T) {
 }
 
 func TestInsertPost(t *testing.T) {
-	db, err := OpenDB("database.db")
+	db, err := OpenDB("database.db","webuser","webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -65,7 +65,7 @@ func TestInsertPost(t *testing.T) {
 }
 
 func TestLikes(t *testing.T) {
-	db, err := OpenDB("database.db")
+	db, err := OpenDB("database.db","webuser","webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,7 +105,7 @@ func TestLikes(t *testing.T) {
 }
 
 func TestGetLikes(t *testing.T) {
-	db, err := OpenDB("database.db")
+	db, err := OpenDB("database.db","webuser","webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -172,7 +172,7 @@ func (f *ForumModel) printLikes(table string) error {
 }
 
 func TestGetPosts(t *testing.T) {
-	db, err := OpenDB("database.db")
+	db, err := OpenDB("database.db","webuser","webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -279,7 +279,7 @@ func TestGetPosts(t *testing.T) {
 }
 
 func TestGetPostsByCategory(t *testing.T) {
-	db, err := OpenDB("database.db")
+	db, err := OpenDB("database.db","webuser","webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -308,7 +308,7 @@ func TestGetPostsByCategory(t *testing.T) {
 }
 
 func TestGetPostsLikedByUser(t *testing.T) {
-	db, err := OpenDB("database.db")
+	db, err := OpenDB("database.db","webuser","webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -347,7 +347,7 @@ func TestGetPostsLikedByUser(t *testing.T) {
 }
 
 func TestGetPostByDI(t *testing.T) {
-	db, err := OpenDB("database.db")
+	db, err := OpenDB("database.db","webuser","webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -372,7 +372,7 @@ func TestGetPostByDI(t *testing.T) {
 }
 
 func TestInsertComment(t *testing.T) {
-	db, err := OpenDB("database.db")
+	db, err := OpenDB("database.db","webuser","webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -389,7 +389,7 @@ func TestInsertComment(t *testing.T) {
 }
 
 func TestAddUserSession(t *testing.T) {
-	db, err := OpenDB("database.db")
+	db, err := OpenDB("database.db","webuser","webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -403,7 +403,7 @@ func TestAddUserSession(t *testing.T) {
 }
 
 func TestInsertUser(t *testing.T) {
-	db, err := OpenDB("database.db")
+	db, err := OpenDB("database.db","webuser","webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -419,7 +419,7 @@ func TestInsertUser(t *testing.T) {
 }
 
 func TestGetUserBySession(t *testing.T) {
-	db, err := OpenDB("database.db")
+	db, err := OpenDB("database.db","webuser","webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -436,7 +436,7 @@ func TestGetUserBySession(t *testing.T) {
 }
 
 func TestGetUserByID(t *testing.T) {
-	db, err := OpenDB("database.db")
+	db, err := OpenDB("database.db","webuser","webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -453,7 +453,7 @@ func TestGetUserByID(t *testing.T) {
 }
 
 func TestAuthenDB(t *testing.T) {
-	db, err := OpenDB("database.db") // open as not admin
+	db, err := OpenDB("database.db","webuser","webuser") // open as not admin
 	if err != nil {
 		t.Fatal(err)
 	}
