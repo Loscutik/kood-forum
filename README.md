@@ -12,7 +12,7 @@ Before we start, here you can find the [audit](https://github.com/01-edu/public/
 
 ## How to run the app?
 
-The project requires Docker, so if you have no Docker on your computer, you need to install it. To do it, please follow this [Link](https://docs.docker.com/get-docker/). You may also need to install the Docker extension to your VS Code if you use it. Please hold the Docker app opened while you launch the forum project.
+The project requires Docker, so if you have no Docker on your computer, you need to install it. To do it, please follow this [>>> LINK <<<](https://docs.docker.com/get-docker/). You may also need to install the Docker extension to your VS Code if you use it. Please hold the Docker app opened while you launch the forum project.
 
 The next step is very easy - please open the "forum" folder using your terminal, and run the file named "docker.sh". On a Windows PC, you can do it by using the command `bash docker.sh`, and you can use a command `./docker.sh` for Linux. This will launch a script which will do all the rest needed things to unpack and open the forum.
 
