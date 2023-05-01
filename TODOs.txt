@@ -1,6 +1,0 @@
-- add to html the creating date {{.Message.DateCreate.Date}}
-
-
-- show like/dislike pressed for the registred user
-
--- keep filter boxes in chosen condition after submit filter
