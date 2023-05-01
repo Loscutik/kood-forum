@@ -156,6 +156,9 @@ func CreateDB(name, admName, admEmail, admPass string) (*sql.DB, error) {
 		INSERT INTO post_categories (categoryID, postID) VALUES (2,4);
 		INSERT INTO post_categories (categoryID, postID) VALUES (3,4);
 		INSERT INTO post_categories (categoryID, postID) VALUES (3,5);
+		INSERT INTO post_categories (categoryID, postID) VALUES (2,6);
+		INSERT INTO post_categories (categoryID, postID) VALUES (4,6);
+		INSERT INTO post_categories (categoryID, postID) VALUES (4,7);
 		
 
 		SELECT auth_user_add('webuser', 'webuser', 0);
