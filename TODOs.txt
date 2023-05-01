@@ -1,6 +1,5 @@
 - add to html the creating date {{.Message.DateCreate.Date}}
 
-! Docker: Does the project present no unused object?
 
 - show like/dislike pressed for the registred user
 
