@@ -12,9 +12,11 @@ Before we start, here you can find the [audit](https://github.com/01-edu/public/
 
 ## How to run the app?
 
-At first, [DOCKER]
+The project requires Docker, so if you have no Docker on your computer, you need to install it. To do it, please follow this [Link](https://docs.docker.com/get-docker/). You may also need to install the Docker extension to your VS Code if you use it. Please hold the Docker app opened while you launch the forum project.
 
-Then, please open the "forum" folder using your terminal, and use a command `go run ./app` to launch the server on port 8080. This command launches a web server written in GoLang. After doing that, if you use Windows PC, you may see an alert, where you need to allow access for Windows Defender Firewall. Please do it.
+The next step is very easy - please open the "forum" folder using your terminal, and run the file named "docker.sh". On a Windows PC, you can do it by using the command `bash docker.sh`, and you can use a command `./docker.sh` for Linux. This will launch a script which will do all the rest needed things to unpack and open the forum.
+
+If, for some case, you want to open the forum project without a Docker, please open the "forum" folder using your terminal, and use a command `go run ./app` to launch the server on port 8080. This command launches a web server written in GoLang. After doing that, if you use Windows PC, you may see an alert, where you need to allow access for Windows Defender Firewall. Please do it.
 If you want to launch the app using another port, please just use the "port" flag `go run ./app --port=8080` and replace "8080" with your desired port number.
 Now you can go to your web browser, and type the following address in the address bar to open the forum main page: [http://localhost:8080/](http://localhost:8080/) (or just use this link 😉).
 
