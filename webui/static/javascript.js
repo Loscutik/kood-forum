@@ -37,10 +37,10 @@ function checkFormSignup(){
 
   submitButton.addEventListener("click", (event) => {
     if (email.value==null ||name.value==null ||password.value==null ||confirmPassword.value==null|| email.value=="" || name.value=="" ||password.value=="" ||confirmPassword.value==""){
-      warning.innerHTML="error: fill all fields";
+      warning.innerHTML="fill all fields";
       warning.style.display="block";
     }else if (password.value!=confirmPassword.value){
-      warning.innerHTML="error: passwords do not match";
+      warning.innerHTML="passwords do not match";
       warning.style.display="block";
     }else{
       // send data by post
@@ -63,7 +63,7 @@ function checkFormSignin(){
 
   submitButton.addEventListener("click", (event) => {
     if (name.value==null ||password.value==null || name.value=="" ||password.value=="" ){
-      warning.innerHTML="error: fill all fields";
+      warning.innerHTML="fill all fields";
       warning.style.display="block";
     }else{
       // send data by post
@@ -76,13 +76,6 @@ function checkFormSignin(){
       sendPost(data, "/login", warning, goIfSuccess)
     }
   });
-}
-
-function changingForm(formID, warningID) {
-  document.getElementById(formID).addEventListener("input", (event) =>{
-    document.getElementById(warningID).style.display="none";
-    document.getElementById(warningID).style.color="rgb(239, 77, 93)";
-  })
 }
 
 function changingFormSignup() {
@@ -181,7 +174,7 @@ function checkFormSettings(){
   
   submitEmail.addEventListener("click", event => {
     if (email.value==null || email.value==""){
-      warningEmail.innerHTML="error: fill all fields";
+      warningEmail.innerHTML="fill all fields";
       warningEmail.style.display="block";
     }else{
       // send data by post
@@ -196,10 +189,10 @@ function checkFormSettings(){
 
   submitPassword.addEventListener("click", event => {
     if (password.value==null ||confirmPassword.value==null || password.value=="" || confirmPassword.value==""){
-      warningPassword.innerHTML="error: fill all fields";
+      warningPassword.innerHTML="fill all fields";
       warningPassword.style.display="block";
     }else if (password.value!=confirmPassword.value){
-      warningPassword.innerHTML="error: passwords do not match";
+      warningPassword.innerHTML="passwords do not match";
       warningPassword.style.display="block";
     }else{
       // send data by post
@@ -249,9 +242,6 @@ const sendPost = async  (data, url, warningElm, checkSpecialCase)=>{
       checkSpecialCase(res);
       const text = await res.text();
       if (text.length!=0){
-        if(!text.startsWith("error:")){
-          warningElm.style.color="rgb(57, 202, 62)"
-        }
         warningElm.innerHTML=text;
         warningElm.style.display="block";
       }
@@ -344,4 +334,29 @@ function CheckCheckBox() {
     return false
   }
   return true
+}
+
+function validateComment() {
+  var z = document.forms["writecomment"]["content"].value;
+  if (z == "") {
+    document.getElementById("newcomment").style.border = "solid 2px";
+    document.getElementById("newcomment").style.borderColor = "rgb(232, 0, 0)";
+    document.getElementById("newcomment").style.borderRadius = "3px";
+    document.getElementById("newcomment").placeholder = "Can't submit an empty comment";
+  }
+  if (z == "") {
+    return false
+  }
+  else {
+    return true
+  }
+}
+
+function checkComment() {
+  if (document.getElementById("newcomment").style.borderColor = "rgb(232, 0, 0)") {
+    document.getElementById("newcomment").style.border = "solid 1px";
+    document.getElementById("newcomment").style.borderColor = "rgb(0, 0, 0)";
+    document.getElementById("newcomment").style.borderRadius = "3px";
+    document.getElementById("newcomment").placeholder = "Write your comment...";
+  }
 }
