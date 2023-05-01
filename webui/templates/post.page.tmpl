@@ -4,9 +4,6 @@
 
 {{define "main"}}
     {{$loggedin := .Session.IsLoggedin}}
-    {{$likesPost := .LikesOwner.Post}}
-    {{$likesComment := .LikesOwner.Comment}}
-
     <div class="post">
         {{with .Post}}
             <p id ={{.ID}} class="post-id">#{{.ID}} by {{template "linkuser" .}} {{range .Categories}} <span id={{.ID}}>, #{{.Name}}</span>{{end}}</p>
@@ -18,8 +15,8 @@
         <div id="reactions">
             {{if $loggedin}}
                 {{with .Post}}
-                    <span id="{{.ID}}-posts_likes-true-n">{{index .Message.Likes 0}}</span><button id="{{.ID}}-posts_likes-true" messageID="{{.ID}}" messageType="{{$likesPost}}" like="true" class="likeicon" name="post-true" onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
-                    <span id="{{.ID}}-posts_likes-false-n">{{index .Message.Likes 1}}</span><button id="{{.ID}}-posts_likes-false" messageID="{{.ID}}" messageType="{{$likesPost}}" like="false" class="likeicon" name="post-false" onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
+                    <span id="{{.ID}}-posts_likes-true-n">{{index .Message.Likes 0}}</span><button id="{{.ID}}-posts_likes-true" messageID="{{.ID}}" messageType="posts_likes" like="true" class="likeicon" name="post-true" onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                    <span id="{{.ID}}-posts_likes-false-n">{{index .Message.Likes 1}}</span><button id="{{.ID}}-posts_likes-false" messageID="{{.ID}}" messageType="posts_likes" like="false" class="likeicon" name="post-false" onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
                 {{end}}
             {{else}} 
                 {{with .Post}}
@@ -38,8 +35,8 @@
             </div>
             <div id="reactions">
                 {{if $loggedin}}
-                    <span id="{{.ID}}-comments_likes-true-n">{{index .Message.Likes 0}}</span><button id="{{.ID}}-comments_likes-true" messageID="{{.ID}}" messageType="{{$likesComment}}" like="true" class="likeicon" name="comment-true"  onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
-                    <span id="{{.ID}}-comments_likes-false-n">{{index .Message.Likes 1}}</span><button id="{{.ID}}-comments_likes-false" messageID="{{.ID}}" messageType="{{$likesComment}}" like="false" class="likeicon" name="comment-false"  onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
+                    <span id="{{.ID}}-comments_likes-true-n">{{index .Message.Likes 0}}</span><button id="{{.ID}}-comments_likes-true" messageID="{{.ID}}" messageType="comments_likes" like="true" class="likeicon" name="comment-true"  onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
+                    <span id="{{.ID}}-comments_likes-false-n">{{index .Message.Likes 1}}</span><button id="{{.ID}}-comments_likes-false" messageID="{{.ID}}" messageType="comments_likes" like="false" class="likeicon" name="comment-false"  onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></button>
                 {{else}} 
                     <span id="{{.ID}}-comments_likes-true-n">{{index .Message.Likes 0}}</span><button id="{{.ID}}-comments_likes-true" class="likeicon not-active-link" name="comment-true"><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>
                     <span id="{{.ID}}-comments_likes-false-n">{{index .Message.Likes 1}}</span><button id="{{.ID}}-comments_likes-false" class="likeicon not-active-link" name="comment-false"><img class="likeicon not-active-link" src="https://cdn-icons-png.flaticon.com/512/3128/3128319.png"></img></button>
@@ -48,9 +45,9 @@
         </div>
     {{end}}
     {{if .Session.IsLoggedin}}
-        <form id="writecomment" class="post" method="post">
+        <form id="writecomment" class="post" method="post" onsubmit="return validateComment()">
             <input id="invisible" name="authorID" value="{{.Session.User.ID}}"></input>
-            <textarea id="newcomment" name="content" placeholder="Write your comment..."></textarea>
+            <textarea id="newcomment" name="content" placeholder="Write your comment..." onclick="checkComment()"></textarea>
             <button id="submitcomment" class="signinupformbutton">Submit</button>
         </form>
     {{end}}
