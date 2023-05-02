@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"regexp"
+	"net/mail"
 	"strconv"
 	"strings"
 	"time"
@@ -40,12 +40,12 @@ var defaultLikesStorage = &likesStorage{model.POSTS_LIKES, model.COMMENTS_LIKES}
 The handler of the main page. Route: /. Methods: GET. Template: home
 */
 func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) {
-	const(
-		AUTHOR="author"
-		LIKEBY="likedby"
-		DISLIKEBY="dislikedby"
+	const (
+		AUTHOR    = "author"
+		LIKEBY    = "likedby"
+		DISLIKEBY = "dislikedby"
 	)
-	
+
 	if r.URL.Path != "/" {
 		app.NotFound(w, r)
 		return
@@ -62,7 +62,7 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 		// checkLoggedin has already written error status to w
 		return
 	}
- 
+
 	// get category filters
 	uQ := r.URL.Query()
 	var categoryID []int
@@ -79,9 +79,9 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	filter := &model.Filter{
-		AuthorID:      0,
-		CategoryID:    categoryID,
-		LikedByUserID: 0,
+		AuthorID:         0,
+		CategoryID:       categoryID,
+		LikedByUserID:    0,
 		DisLikedByUserID: 0,
 	}
 
@@ -112,10 +112,10 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 
 	// create a page
 	output := &struct {
-		Session    *session
-		Posts      []*model.Post
-		Categories []*model.Category
-		Filter *model.Filter
+		Session      *session
+		Posts        []*model.Post
+		Categories   []*model.Category
+		Filter       *model.Filter
 		LikesStorage *likesStorage
 	}{Session: ses, Posts: posts, Categories: categories, Filter: filter, LikesStorage: defaultLikesStorage}
 	// Assembling the page from templates
@@ -126,7 +126,6 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 the signup page.  Route: /signup. Methods: POST. Template: signup
 */
 func (app *application) signupPageHandler(w http.ResponseWriter, r *http.Request) {
-
 	// only if it's notloggedin - needs wrapper
 
 	// try to add a user
@@ -146,10 +145,17 @@ func (app *application) signupPageHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	// check email
-	if !regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`).Match([]byte(email)) {
+	// mail.ParseAddress accepts also local domens e.g witout .(dot)
+	_, err = mail.ParseAddress(email)
+	if err != nil {
 		w.Write([]byte("error: wrong email"))
 		return
 	}
+	// the regex allows only Internet emails, e.g. with dot-atom domain (https://www.rfc-editor.org/rfc/rfc5322.html#section-3.4)
+	// if !regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`).Match([]byte(email)) {
+	// 	w.Write([]byte("error: wrong email"))
+	// 	return
+	// }
 
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), 8)
 	if err != nil {
@@ -266,8 +272,6 @@ func (app *application) signupSuccessPageHandler(w http.ResponseWriter, r *http.
 the login page. Route: /login. Methods: POST. Template: signin
 */
 func (app *application) signinPageHandler(w http.ResponseWriter, r *http.Request) {
-	
-
 	// only if it's notloggedin - needs wrapper
 	// try to add a user
 	err := r.ParseForm()
@@ -416,12 +420,19 @@ func (app *application) settingsPageHandler(w http.ResponseWriter, r *http.Reque
 			return
 		}
 
-		// check email
 		if email != "" {
-			if !regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`).Match([]byte(email)) {
+			// check email
+			// mail.ParseAddress accepts also local domens e.g witout .(dot)
+			_, err = mail.ParseAddress(email)
+			if err != nil {
 				w.Write([]byte("error: wrong email"))
 				return
 			}
+			// the regex allows only Internet emails, e.g. with dot-atom domain (https://www.rfc-editor.org/rfc/rfc5322.html#section-3.4)
+			// if !regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`).Match([]byte(email)) {
+			// 	w.Write([]byte("error: wrong email"))
+			// 	return
+			// }
 
 			err = app.forumData.ChangeUsersEmail(ses.User.ID, email)
 			if err != nil {
@@ -462,7 +473,7 @@ func (app *application) settingsPageHandler(w http.ResponseWriter, r *http.Reque
 		app.executeTemplate(w, r, "settings", output)
 	default:
 		// only GET or PUT methods are allowed
-		app.MethodNotAllowed(w, r, http.MethodGet,http.MethodPost)
+		app.MethodNotAllowed(w, r, http.MethodGet, http.MethodPost)
 	}
 }
 
@@ -472,7 +483,7 @@ the post's page. Route: /post/p{{Id}}. Methods: GET, POST. Template: post
 func (app *application) postPageHandler(w http.ResponseWriter, r *http.Request) {
 	// only GET or PUT methods are allowed
 	if r.Method != http.MethodGet && r.Method != http.MethodPost {
-		app.MethodNotAllowed(w, r, http.MethodGet,http.MethodPost)
+		app.MethodNotAllowed(w, r, http.MethodGet, http.MethodPost)
 		return
 	}
 
@@ -549,8 +560,8 @@ func (app *application) postPageHandler(w http.ResponseWriter, r *http.Request) 
 
 	// create a page
 	output := &struct {
-		Session    *session
-		Post       *model.Post
+		Session      *session
+		Post         *model.Post
 		LikesStorage *likesStorage
 	}{Session: ses, Post: post, LikesStorage: defaultLikesStorage}
 
