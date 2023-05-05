@@ -5,28 +5,18 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
 
+	"forum/app/config"
+	"forum/app/templates"
 	"forum/model"
 	"forum/model/sqlpkg"
 
 	"golang.org/x/crypto/bcrypt"
 )
-
-// const (
-// 	TEMPLATES_PATH = "./templates/"
-// )
-
-type application struct {
-	errLog       *log.Logger
-	infoLog      *log.Logger
-	temlateCashe map[string]*template.Template
-	forumData    *sqlpkg.ForumModel
-}
 
 func main() {
 	// Creates logs of what happened
@@ -39,7 +29,7 @@ func main() {
 	infoLog := log.New(infoLogFile, "INFO:  ", log.Ldate|log.Ltime|log.Lshortfile)
 
 	// create template's cashe - it keeps parsed temlates
-	templates, err := newTemplateCache(TEMPLATES_PATH)
+	templates, err := templates.NewTemplateCache(templates.TEMPLATES_PATH)
 	if err != nil {
 		errLog.Fatal(err)
 	}
@@ -59,7 +49,7 @@ func main() {
 		}
 		infoLog.Printf("DB has created in")
 	} else {
-		db, err = sqlpkg.OpenDB("forumDB.db","webuser", "webuser")
+		db, err = sqlpkg.OpenDB("forumDB.db", "webuser", "webuser")
 		if err != nil {
 			errLog.Fatal(err)
 		}
@@ -67,11 +57,11 @@ func main() {
 	defer db.Close()
 
 	// app keeps all dependenses used by handlers
-	app := &application{
-		errLog:       errLog,
-		infoLog:      infoLog,
-		temlateCashe: templates,
-		forumData:    &sqlpkg.ForumModel{DB: db},
+	app := &config.Application{
+		ErrLog:       errLog,
+		InfoLog:      infoLog,
+		TemlateCashe: templates,
+		ForumData:    &sqlpkg.ForumModel{DB: db},
 	}
 
 	port, err := parseArgs()
@@ -81,10 +71,10 @@ func main() {
 	// Starting the web server
 	server := &http.Server{
 		Addr:     ":" + *port,
-		ErrorLog: app.errLog,
-		Handler:  app.routers(),
+		ErrorLog: app.ErrLog,
+		Handler:  routers(app),
 	}
-	fmt.Printf("Starting server at port %s\n", *port)
+	fmt.Printf("Starting server at http://localhost:%s\n", *port)
 	infoLog.Printf("Starting server at port %s\n", *port)
 	if err := server.ListenAndServe(); err != nil {
 		errLog.Fatal(err)

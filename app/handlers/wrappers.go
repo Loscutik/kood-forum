@@ -1,6 +1,10 @@
-package main
+package handlers
 
-import "net/http"
+import (
+	"net/http"
+
+	"forum/app/config"
+)
 
 func checkMethods(r *http.Request, methods ...string) bool {
 	for _, mth := range methods {
@@ -14,19 +18,19 @@ func checkMethods(r *http.Request, methods ...string) bool {
 /*
 MustMethods wrapper makes sure that the request's method is allowed
 */
-func (app *application) MustMethods(h http.Handler, allowedMethods ...string) http.Handler {
+func MustMethods(app *config.Application, h http.Handler, allowedMethods ...string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !checkMethods(r, allowedMethods...) {
-			app.MethodNotAllowed(w, r, allowedMethods...)
+			MethodNotAllowed(app, w, r, allowedMethods...)
 			return
 		}
 		h.ServeHTTP(w, r)
 	})
 }
 
-func (app *application) NotAuth(h http.Handler) http.Handler {
+func NotAuth(app *config.Application, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ses, err := app.checkLoggedin(w, r)
+		ses, err := checkLoggedin(app, w, r)
 		if err != nil {
 			// checkLoggedin has already written error status to w
 			return
@@ -36,13 +40,13 @@ func (app *application) NotAuth(h http.Handler) http.Handler {
 			w.WriteHeader(204)
 			return
 		}
-		
+
 		h.ServeHTTP(w, r)
 	})
 }
 
-func (app *application) Signs(h http.HandlerFunc, allowedMethods ...string) http.Handler {
+func Signs(app *config.Application, h http.HandlerFunc, allowedMethods ...string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		app.MustMethods(app.NotAuth(h),allowedMethods...).ServeHTTP(w,r)
+		MustMethods(app, NotAuth(app,h), allowedMethods...).ServeHTTP(w, r)
 	})
 }

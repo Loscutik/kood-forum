@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"database/sql"
@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"forum/app/config"
 	"forum/model"
 
 	"github.com/gofrs/uuid"
@@ -19,7 +20,7 @@ const (
 	notloggedin
 )
 
-const TIME_BEFORE_AFTER_REFRESH =30
+const TIME_BEFORE_AFTER_REFRESH = 30
 
 type session struct {
 	LoginStatus loginStatus
@@ -37,11 +38,11 @@ func (s *session) timeToExpired() time.Duration {
 }
 
 func (s *session) IsLoggedin() bool {
-	return s.LoginStatus==loggedin
+	return s.LoginStatus == loggedin
 }
 
-func NotloggedinSession() *session{
-	return &session{notloggedin,nil}
+func NotloggedinSession() *session {
+	return &session{notloggedin, nil}
 }
 
 /*
@@ -49,11 +50,11 @@ returns session which contains status of login and uses's data if it's logged in
 If it is left lrss than 30 sec to expiried time, it will refresh the session
 If an error occurs it will response to the client with error status and return the error
 */
-func (app *application) checkLoggedin(w http.ResponseWriter, r *http.Request) (*session, error) {
+func checkLoggedin(app *config.Application, w http.ResponseWriter, r *http.Request) (*session, error) {
 	session := &session{notloggedin, nil}
 	cook, err := r.Cookie("SID")
 	if err != nil && err != http.ErrNoCookie {
-		app.ClientError(w, r, http.StatusBadRequest, fmt.Sprintf("getting cookie SID failed: %s, url: %s", err, r.URL))
+		ClientError(app, w, r, http.StatusBadRequest, fmt.Sprintf("getting cookie SID failed: %s, url: %s", err, r.URL))
 		return nil, err
 	}
 	if err == http.ErrNoCookie || cook.Value == "" {
@@ -63,12 +64,12 @@ func (app *application) checkLoggedin(w http.ResponseWriter, r *http.Request) (*
 	// there is a SID
 	SID := cook.Value
 
-	user, err := app.forumData.GetUserBySession(SID)
+	user, err := app.ForumData.GetUserBySession(SID)
 	if err != nil {
 		if err == model.ErrNoRecord {
 			return session, nil
 		}
-		app.ServerError(w, r, "getting a user by SID failed", err)
+		ServerError(app, w, r, "getting a user by SID failed", err)
 		return nil, err
 	}
 	session.User = user
@@ -76,9 +77,9 @@ func (app *application) checkLoggedin(w http.ResponseWriter, r *http.Request) (*
 	if session.isExpired() {
 		// delete the session & return expiried status
 		session.User = nil
-		err := app.forumData.DeleteUsersSession(user.ID)
+		err := app.ForumData.DeleteUsersSession(user.ID)
 		if err != nil {
-			app.ServerError(w, r, "deleting the expired session failed", err)
+			ServerError(app, w, r, "deleting the expired session failed", err)
 			return nil, err
 		}
 
@@ -95,7 +96,7 @@ func (app *application) checkLoggedin(w http.ResponseWriter, r *http.Request) (*
 		// refresh the session
 		newSID, err := uuid.NewV4()
 		if err != nil {
-			app.ServerError(w, r, "UUID creating failed", err)
+			ServerError(app, w, r, "UUID creating failed", err)
 			return nil, err
 		}
 		expiresAt := time.Now().Add(EXP_SESSION * time.Second)
@@ -106,13 +107,13 @@ func (app *application) checkLoggedin(w http.ResponseWriter, r *http.Request) (*
 			Expires: expiresAt,
 		})
 
-		err = app.forumData.AddUsersSession(user.ID, newSID.String(), expiresAt)
+		err = app.ForumData.AddUsersSession(user.ID, newSID.String(), expiresAt)
 		if err != nil {
-			app.ServerError(w, r, "adding session failed", err)
+			ServerError(app, w, r, "adding session failed", err)
 			return nil, err
 		}
 		session.User.Session = newSID.String()
-		session.User.ExpirySession=sql.NullTime{Time: expiresAt, Valid: true}
+		session.User.ExpirySession = sql.NullTime{Time: expiresAt, Valid: true}
 	}
 
 	// user was found and his time was not expired or renewed:

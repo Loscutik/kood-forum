@@ -1,4 +1,4 @@
-package main
+package templates
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 func BenchmarkTemplateCach(b *testing.B) {
-	tms, err := newTemplateCache(TEMPLATES_PATH)
+	tms, err := NewTemplateCache(TEMPLATES_PATH)
 	fmt.Printf("Templates: %#v\nError: %s\n", tms, err)
 	for _, tm := range tms {
 		fmt.Printf("template's name: %s\nBase: %s\n", tm.Name(), filepath.Base(tm.Name()))

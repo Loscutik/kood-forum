@@ -1,23 +1,29 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
 
-func (app *application) routers() *http.ServeMux {
+	"forum/app/config"
+	"forum/app/handlers"
+	"forum/app/templates"
+)
+
+func routers(app *config.Application) *http.ServeMux {
 	mux := http.NewServeMux()
-	
-	mux.HandleFunc("/", app.homePageHandler)
-	mux.Handle("/signup", app.Signs(app.signupPageHandler, http.MethodPost))
-	mux.HandleFunc("/signup/success", app.signupSuccessPageHandler)
-	mux.Handle("/login", app.Signs(app.signinPageHandler, http.MethodPost))
-	mux.HandleFunc("/userinfo/", app.userPageHandler)
-	mux.HandleFunc("/settings", app.settingsPageHandler)
-	mux.HandleFunc("/post/", app.postPageHandler)
-	mux.HandleFunc("/addpost", app.addPostPageHandler)
-	mux.HandleFunc("/post/create", app.postCreatorHandler)
-	mux.HandleFunc("/liking", app.likingHandler)
-	mux.HandleFunc("/logout", app.logoutHandler)
 
-	fileServer := http.FileServer(http.Dir(STATIC_PATH))
+	mux.Handle("/", handlers.HomePageHandler(app))
+	mux.Handle("/signup", handlers.Signs(app, handlers.SignupPageHandler(app), http.MethodPost))
+	mux.Handle("/signup/success", handlers.SignupSuccessPageHandler(app))
+	mux.Handle("/login", handlers.Signs(app, handlers.SigninPageHandler(app), http.MethodPost))
+	mux.Handle("/userinfo/", handlers.UserPageHandler(app))
+	mux.Handle("/settings", handlers.SettingsPageHandler(app))
+	mux.Handle("/post/", handlers.PostPageHandler(app))
+	mux.Handle("/addpost", handlers.AddPostPageHandler(app))
+	mux.Handle("/post/create", handlers.PostCreatorHandler(app))
+	mux.Handle("/liking", handlers.LikingHandler(app))
+	mux.Handle("/logout", handlers.LogoutHandler(app))
+
+	fileServer := http.FileServer(http.Dir(templates.STATIC_PATH))
 	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
 	return mux
 }
