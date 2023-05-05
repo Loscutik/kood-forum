@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"forum/app/config"
@@ -114,7 +115,7 @@ func PostCreatorHandler(app *config.Application) http.HandlerFunc {
 			categoriesID[i] = id
 		}
 
-		if theme == "" || content == "" || len(categories) == 0 || categoriesID[0] == 0 {
+		if strings.TrimSpace(theme) == "" || strings.TrimSpace(content) == "" || len(categories) == 0 || categoriesID[0] == 0 {
 			ClientError(app, w, r, http.StatusBadRequest, "post creating failed: empty data")
 			return
 		}

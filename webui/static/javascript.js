@@ -1,17 +1,17 @@
 function header() {
   if (document.body.scrollTop == 0 || document.documentElement.scrollTop == 0) {
-      document.getElementById("header").style.marginTop = "0px";
+    document.getElementById("header").style.marginTop = "0px";
   }
   if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
-document.getElementById("header").style.marginTop = "-57px";
+    document.getElementById("header").style.marginTop = "-57px";
   }
 }
 function header2() {
-document.getElementById("header").style.marginTop = "0px";
+  document.getElementById("header").style.marginTop = "0px";
 }
 function header3() {
   if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
-document.getElementById("header").style.marginTop = "-57px";
+    document.getElementById("header").style.marginTop = "-57px";
   }
 }
 
@@ -21,31 +21,31 @@ function signIn() {
   document.getElementById("signupform").style.display = "none";
 }
 function signUp() {
-    document.getElementById("darkness").style.display = "block";
-    document.getElementById("signupform").style.display = "block";
-    document.getElementById("signinform").style.display = "none";
-  
+  document.getElementById("darkness").style.display = "block";
+  document.getElementById("signupform").style.display = "block";
+  document.getElementById("signinform").style.display = "none";
+
 }
 
-function checkFormSignup(){ 
-  const submitButton=document.querySelector("#signup_submit");
-  const email=document.querySelector("#email") 
-  const name= document.querySelector("#name-up")
-  const password=document.getElementById("password-up");
-  const confirmPassword=document.getElementById("confirm_password");
-  const warning=document.querySelector("#warning-up");
+function checkFormSignup() {
+  const submitButton = document.querySelector("#signup_submit");
+  const email = document.querySelector("#email")
+  const name = document.querySelector("#name-up")
+  const password = document.getElementById("password-up");
+  const confirmPassword = document.getElementById("confirm_password");
+  const warning = document.querySelector("#warning-up");
 
   submitButton.addEventListener("click", (event) => {
-    if (email.value==null ||name.value==null ||password.value==null ||confirmPassword.value==null|| email.value=="" || name.value=="" ||password.value=="" ||confirmPassword.value==""){
-      warning.innerHTML="error: fill all fields";
-      warning.style.display="block";
-    }else if (password.value!=confirmPassword.value){
-      warning.innerHTML="error: passwords do not match";
-      warning.style.display="block";
-    }else{
+    if (email.value == null || name.value == null || password.value == null || confirmPassword.value == null || email.value == "" || name.value == "" || password.value == "" || confirmPassword.value == "") {
+      warning.innerHTML = "error: fill all fields";
+      warning.style.display = "block";
+    } else if (password.value != confirmPassword.value) {
+      warning.innerHTML = "error: passwords do not match";
+      warning.style.display = "block";
+    } else {
       // send data by post
       // form data for post
-      let data = { 
+      let data = {
         email: email.value,
         name: name.value,
         password: password.value,
@@ -55,20 +55,20 @@ function checkFormSignup(){
   });
 }
 
-function checkFormSignin(){
-  const submitButton=document.querySelector("#signin_submit");
-  const name= document.querySelector("#name-in")
-  const password=document.getElementById("password-in");
-  const warning=document.querySelector("#warning-in");
+function checkFormSignin() {
+  const submitButton = document.querySelector("#signin_submit");
+  const name = document.querySelector("#name-in")
+  const password = document.getElementById("password-in");
+  const warning = document.querySelector("#warning-in");
 
   submitButton.addEventListener("click", (event) => {
-    if (name.value==null ||password.value==null || name.value=="" ||password.value=="" ){
-      warning.innerHTML="error: fill all fields";
-      warning.style.display="block";
-    }else{
+    if (name.value == null || password.value == null || name.value == "" || password.value == "") {
+      warning.innerHTML = "error: fill all fields";
+      warning.style.display = "block";
+    } else {
       // send data by post
       // form data for post
-      let data = { 
+      let data = {
         name: name.value,
         password: password.value,
       };
@@ -79,33 +79,33 @@ function checkFormSignin(){
 }
 
 function changingForm(formID, warningID) {
-  document.getElementById(formID).addEventListener("input", (event) =>{
-    document.getElementById(warningID).style.display="none";
-    document.getElementById(warningID).style.color="rgb(239, 77, 93)";
+  document.getElementById(formID).addEventListener("input", (event) => {
+    document.getElementById(warningID).style.display = "none";
+    document.getElementById(warningID).style.color = "rgb(239, 77, 93)";
   })
 }
 
 function changingFormSignup() {
-  const form=document.querySelector("#signup_form");
-  form.addEventListener("change", (event) =>{
-    document.getElementById("warning-up").style.display="none";
+  const form = document.querySelector("#signup_form");
+  form.addEventListener("change", (event) => {
+    document.getElementById("warning-up").style.display = "none";
   })
 }
 
 function changingFormSignin() {
-  const form=document.querySelector("#signin_form");
-  form.addEventListener("change", (event) =>{
-    document.getElementById("warning-in").style.display="none";
+  const form = document.querySelector("#signin_form");
+  form.addEventListener("change", (event) => {
+    document.getElementById("warning-in").style.display = "none";
   })
 }
 
-function handleLike(id){
+function handleLike(id) {
   // needed : "messageType"("posts_likes", "comments_likes") "messageID"(#)  "like"(bool) 
   const clickedElement = document.getElementById(id);
   var messageType = clickedElement.getAttribute("messageType");
   var messageID = clickedElement.getAttribute("messageID");
-  const labelLike = document.getElementById(messageID+"-"+messageType+"-true-n");
-  const labelDislike = document.getElementById(messageID+"-"+messageType+"-false-n");
+  const labelLike = document.getElementById(messageID + "-" + messageType + "-true-n");
+  const labelDislike = document.getElementById(messageID + "-" + messageType + "-false-n");
   // create a request with JSON data
   let data = {
     messageType: messageType,
@@ -116,21 +116,21 @@ function handleLike(id){
   headers.append('Content-Type', 'application/json');
 
   fetch("/liking", {
-  method: "POST",
-  headers: headers, 
-  credentials: "same-origin",
-  redirect: "follow", 
-  body: JSON.stringify(data)
+    method: "POST",
+    headers: headers,
+    credentials: "same-origin",
+    redirect: "follow",
+    body: JSON.stringify(data)
   }).then(res => {
     if (!res.ok) {
       throw new Error(`HTTP error! Status: ${res.status}`);
     }
     return res.json();
   })
-  .then(likes =>{
-    labelLike.innerHTML=likes["like"];
-    labelDislike.innerHTML=likes["dislike"];
-  });
+    .then(likes => {
+      labelLike.innerHTML = likes["like"];
+      labelDislike.innerHTML = likes["dislike"];
+    });
 }
 
 function darkness() {
@@ -170,111 +170,111 @@ function ShowPassword() {
   }
 }
 
-function checkFormSettings(){ 
-  const email=document.getElementById("email") 
-  const submitEmail=document.getElementById("submit_email");
-  const warningEmail=document.getElementById("warning_email");
-  const password=document.getElementById("password");
-  const confirmPassword=document.getElementById("confirm_password");
-  const submitPassword=document.getElementById("submit_password");
-  const warningPassword=document.getElementById("warning_password");
-  
+function checkFormSettings() {
+  const email = document.getElementById("email")
+  const submitEmail = document.getElementById("submit_email");
+  const warningEmail = document.getElementById("warning_email");
+  const password = document.getElementById("password");
+  const confirmPassword = document.getElementById("confirm_password");
+  const submitPassword = document.getElementById("submit_password");
+  const warningPassword = document.getElementById("warning_password");
+
   submitEmail.addEventListener("click", event => {
-    if (email.value==null || email.value==""){
-      warningEmail.innerHTML="error: fill all fields";
-      warningEmail.style.display="block";
-    }else{
+    if (email.value == null || email.value == "") {
+      warningEmail.innerHTML = "error: fill all fields";
+      warningEmail.style.display = "block";
+    } else {
       // send data by post
       // form data for post
-      let data = { 
+      let data = {
         email: email.value,
       };
-      
-      sendPost(data, "/settings", warningEmail, (res=>{})); 
+
+      sendPost(data, "/settings", warningEmail, (res => { }));
     }
   });
 
   submitPassword.addEventListener("click", event => {
-    if (password.value==null ||confirmPassword.value==null || password.value=="" || confirmPassword.value==""){
-      warningPassword.innerHTML="error: fill all fields";
-      warningPassword.style.display="block";
-    }else if (password.value!=confirmPassword.value){
-      warningPassword.innerHTML="error: passwords do not match";
-      warningPassword.style.display="block";
-    }else{
+    if (password.value == null || confirmPassword.value == null || password.value == "" || confirmPassword.value == "") {
+      warningPassword.innerHTML = "error: fill all fields";
+      warningPassword.style.display = "block";
+    } else if (password.value != confirmPassword.value) {
+      warningPassword.innerHTML = "error: passwords do not match";
+      warningPassword.style.display = "block";
+    } else {
       // send data by post
       // form data for post
-      let data = { 
+      let data = {
         password: password.value,
       };
-      
-      sendPost(data, "/settings", warningPassword, (res=>{})); 
+
+      sendPost(data, "/settings", warningPassword, (res => { }));
     }
   });
 }
 
-async function goIfSuccess(res){
-  if (res.status==204){
-    window.location.href =res.headers.get("Location");
+async function goIfSuccess(res) {
+  if (res.status == 204) {
+    window.location.href = res.headers.get("Location");
   }
 }
 
-const sendPost = async  (data, url, warningElm, checkSpecialCase)=>{
-   // create a request with form-data
-   const urlEncodedDataPairs = [];
-   for (const [name, value] of Object.entries(data)) {
-     urlEncodedDataPairs.push(`${encodeURIComponent(name)}=${encodeURIComponent(value)}`);
-   }
-   
-   // Combine the pairs into a single string and replace all %-encoded spaces to
-   // the '+' character; matches the behavior of browser form submissions.
-   const urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
-   const headers = new Headers();
-   headers.append('Content-Type', 'application/x-www-form-urlencoded');
-   
-   // send the POST request to the server
-   const res= await fetch(url, {
-     method: "POST",
-     headers: headers,
-     credentials: "same-origin",
-     redirect: "error", 
-     body: urlEncodedData
-   })
+const sendPost = async (data, url, warningElm, checkSpecialCase) => {
+  // create a request with form-data
+  const urlEncodedDataPairs = [];
+  for (const [name, value] of Object.entries(data)) {
+    urlEncodedDataPairs.push(`${encodeURIComponent(name)}=${encodeURIComponent(value)}`);
+  }
 
-    if (!res.ok){
-      const html=  await res.text();
-      document.querySelector("html").innerHTML=html;
-      return; 
-    }else{
-      checkSpecialCase(res);
-      const text = await res.text();
-      if (text.length!=0){
-        if(!text.startsWith("error:")){
-          warningElm.style.color="rgb(57, 202, 62)"
-        }
-        warningElm.innerHTML=text;
-        warningElm.style.display="block";
+  // Combine the pairs into a single string and replace all %-encoded spaces to
+  // the '+' character; matches the behavior of browser form submissions.
+  const urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
+  const headers = new Headers();
+  headers.append('Content-Type', 'application/x-www-form-urlencoded');
+
+  // send the POST request to the server
+  const res = await fetch(url, {
+    method: "POST",
+    headers: headers,
+    credentials: "same-origin",
+    redirect: "error",
+    body: urlEncodedData
+  })
+
+  if (!res.ok) {
+    const html = await res.text();
+    document.querySelector("html").innerHTML = html;
+    return;
+  } else {
+    checkSpecialCase(res);
+    const text = await res.text();
+    if (text.length != 0) {
+      if (!text.startsWith("error:")) {
+        warningElm.style.color = "rgb(57, 202, 62)"
       }
+      warningElm.innerHTML = text;
+      warningElm.style.display = "block";
     }
+  }
 }
 
 function validatePost() {
   var x = document.forms["pform"]["theme"].value;
   var y = document.forms["pform"]["content"].value;
-  if (x == "") {
+  if (x.trim() == "") {
     document.getElementById("PostTopic").style.border = "solid 2px";
     document.getElementById("PostTopic").style.borderColor = "rgb(232, 0, 0)";
     document.getElementById("PostTopic").style.borderRadius = "3px";
     document.getElementById("PostTopic").placeholder = "Please enter the topic!";
   }
-  if (y == "") {
+  if (y.trim() == "") {
     document.getElementById("textarea_newpost").style.border = "solid 2px";
     document.getElementById("textarea_newpost").style.borderColor = "rgb(232, 0, 0)";
     document.getElementById("textarea_newpost").style.borderRadius = "3px";
     document.getElementById("textarea_newpost").placeholder = "Please enter the text!";
   }
 
-  if (x == "" || y == "") {
+  if (x.trim() == "" || y.trim() == "") {
     return false
   }
   else {
@@ -293,7 +293,7 @@ function CheckValidatePost() {
     document.getElementById("textarea_newpost").style.borderRadius = "3px";
     document.getElementById("textarea_newpost").placeholder = "Enter your text here...";
   }
-  if (CheckCheckBox() == false ) {
+  if (CheckCheckBox() == false) {
     document.querySelectorAll('.categorylabel').forEach(el => {
       el.style.border = "solid rgb(255, 193, 47) 2px";
     })
@@ -310,17 +310,17 @@ function Up() {
 document.addEventListener('DOMContentLoaded', function () {
 
   document.querySelectorAll('.categorylabel').forEach(el => {
-    el.addEventListener("click", function(ev){
+    el.addEventListener("click", function (ev) {
       ev.target.classList.toggle("selected")
     })
   });
 
   let pform = document.getElementById("pform")
-  if (pform){
-    document.getElementById("pform").addEventListener("submit", function(ev){
+  if (pform) {
+    document.getElementById("pform").addEventListener("submit", function (ev) {
       console.log(ev.target)
       ev.preventDefault();
-      if (validatePost() && CheckCheckBox()){
+      if (validatePost() && CheckCheckBox()) {
         ev.target.submit();
       }
     })
@@ -332,9 +332,9 @@ document.addEventListener('DOMContentLoaded', function () {
 function CheckCheckBox() {
   var t = false;
   document.querySelectorAll('.categories').forEach(el => {
-   if (el.checked == true) {
+    if (el.checked == true) {
       t = true
-   }
+    }
   })
   if (t == false) {
     document.querySelectorAll('.categorylabel').forEach(el => {
@@ -349,13 +349,13 @@ function CheckCheckBox() {
 
 function validateComment() {
   var z = document.forms["writecomment"]["content"].value;
-  if (z == "") {
+  if (z.trim() == "") {
     document.getElementById("newcomment").style.border = "solid 2px";
     document.getElementById("newcomment").style.borderColor = "rgb(232, 0, 0)";
     document.getElementById("newcomment").style.borderRadius = "3px";
     document.getElementById("newcomment").placeholder = "Can't submit an empty comment";
   }
-  if (z == "") {
+  if (z.trim() == "") {
     return false
   }
   else {

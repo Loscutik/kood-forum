@@ -71,7 +71,7 @@ func PostPageHandler(app *config.Application) http.HandlerFunc {
 			}
 
 			dateCreate := time.Now()
-			if content == "" {
+			if strings.TrimSpace(content) == "" {
 				ClientError(app, w, r, http.StatusBadRequest, "comment creating failed: empty data")
 				return
 			}
