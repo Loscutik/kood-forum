@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"regexp"
+	"net/mail"
 	"strconv"
 	"strings"
 	"time"
@@ -154,10 +154,17 @@ func SignupPageHandler(app *config.Application) http.HandlerFunc {
 		}
 
 		// check email
-		if !regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`).Match([]byte(email)) {
+		// mail.ParseAddress accepts also local domens e.g witout .(dot)
+		_, err = mail.ParseAddress(email)
+		if err != nil {
 			w.Write([]byte("error: wrong email"))
 			return
 		}
+		// the regex allows only Internet emails, e.g. with dot-atom domain (https://www.rfc-editor.org/rfc/rfc5322.html#section-3.4)
+		// if !regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`).Match([]byte(email)) {
+		// 	w.Write([]byte("error: wrong email"))
+		// 	return
+		// }
 
 		hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), 8)
 		if err != nil {
@@ -438,12 +445,19 @@ func SettingsPageHandler(app *config.Application) http.HandlerFunc {
 				return
 			}
 
-			// check email
 			if email != "" {
-				if !regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`).Match([]byte(email)) {
+				// check email
+				// mail.ParseAddress accepts also local domens e.g witout .(dot)
+				_, err = mail.ParseAddress(email)
+				if err != nil {
 					w.Write([]byte("error: wrong email"))
 					return
 				}
+				// the regex allows only Internet emails, e.g. with dot-atom domain (https://www.rfc-editor.org/rfc/rfc5322.html#section-3.4)
+				// if !regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`).Match([]byte(email)) {
+				// 	w.Write([]byte("error: wrong email"))
+				// 	return
+				// }
 
 				err = app.ForumData.ChangeUsersEmail(ses.User.ID, email)
 				if err != nil {

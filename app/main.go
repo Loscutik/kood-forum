@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"errors"
 	"flag"
 	"fmt"
@@ -35,7 +34,7 @@ func main() {
 	}
 
 	// init DB pool "forumDB.db"
-	var db *sql.DB
+	var forumData *sqlpkg.ForumModel
 	_, err = os.Stat("forumDB.db")
 	if errors.Is(err, os.ErrNotExist) {
 		hashPassword, err := bcrypt.GenerateFromPassword([]byte(model.ADM_PASS), 8)
@@ -43,25 +42,29 @@ func main() {
 			errLog.Fatal("password crypting failed: ", err)
 			return
 		}
-		db, err = sqlpkg.CreateDB("forumDB.db", model.ADM_NAME, model.ADM_EMAIL, string(hashPassword))
+		db, err := sqlpkg.CreateDB("forumDB.db", model.ADM_NAME, model.ADM_EMAIL, string(hashPassword))
 		if err != nil {
 			errLog.Fatal(err)
 		}
-		infoLog.Printf("DB has created in")
+		forumData = &sqlpkg.ForumModel{DB: db}
+		infoLog.Printf("DB has been created")
+		testDB(forumData)
+		infoLog.Printf("DB has been filled by examles of data")
 	} else {
-		db, err = sqlpkg.OpenDB("forumDB.db", "webuser", "webuser")
+		db, err := sqlpkg.OpenDB("forumDB.db", "webuser", "webuser")
 		if err != nil {
 			errLog.Fatal(err)
 		}
+		forumData = &sqlpkg.ForumModel{DB: db}
 	}
-	defer db.Close()
+	defer forumData.DB.Close()
 
 	// app keeps all dependenses used by handlers
 	app := &config.Application{
 		ErrLog:       errLog,
 		InfoLog:      infoLog,
 		TemlateCashe: templates,
-		ForumData:    &sqlpkg.ForumModel{DB: db},
+		ForumData:   forumData,
 	}
 
 	port, err := parseArgs()
@@ -74,7 +77,7 @@ func main() {
 		ErrorLog: app.ErrLog,
 		Handler:  routers(app),
 	}
-	fmt.Printf("Starting server at http://localhost:%s\n", *port)
+	fmt.Printf("Starting server at http://www.localhost:%s\n", *port)
 	infoLog.Printf("Starting server at port %s\n", *port)
 	if err := server.ListenAndServe(); err != nil {
 		errLog.Fatal(err)
@@ -94,4 +97,16 @@ func parseArgs() (*string, error) {
 		return nil, fmt.Errorf("error: port must be a 16-bit unsigned number ")
 	}
 	return port, nil
+}
+
+func testDB(forum *sqlpkg.ForumModel) error {
+	hashPassword1, err := bcrypt.GenerateFromPassword([]byte("test1"), 8)
+	if err != nil {
+		return fmt.Errorf("password crypting failed: %v", err)
+	}
+	hashPassword2, err := bcrypt.GenerateFromPassword([]byte("test2"), 8)
+	if err != nil {
+		return fmt.Errorf("password crypting failed: %v", err)
+	}
+	return forum.FillInDB("model/sqlpkg/testDB.sql", string(hashPassword1), string(hashPassword2))
 }

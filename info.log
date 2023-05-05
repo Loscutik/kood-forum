@@ -306,6 +306,7 @@ INFO:  2023/05/01 20:57:45 main.go:88: Starting server at port 8080
 INFO:  2023/05/01 20:59:47 main.go:88: Starting server at port 8080
 INFO:  2023/05/01 21:01:17 main.go:88: Starting server at port 8080
 INFO:  2023/05/01 21:02:15 main.go:88: Starting server at port 8080
+<<<<<<< HEAD
 INFO:  2023/05/02 15:28:22 main.go:88: Starting server at port 8080
 INFO:  2023/05/02 15:31:22 main.go:88: Starting server at port 8080
 INFO:  2023/05/02 15:32:32 main.go:88: Starting server at port 8080
@@ -313,3 +314,35 @@ INFO:  2023/05/02 16:00:08 main.go:88: Starting server at port 8080
 INFO:  2023/05/05 15:15:09 main.go:78: Starting server at port 8080
 INFO:  2023/05/05 15:16:29 main.go:78: Starting server at http://localhost:8080
 INFO:  2023/05/05 15:17:06 main.go:78: Starting server at port 8080
+=======
+INFO:  2023/05/02 00:28:16 main.go:88: Starting server at port 8080
+INFO:  2023/05/02 11:45:07 main.go:88: Starting server at port 8080
+INFO:  2023/05/02 14:44:12 main.go:91: Starting server at port 8080
+INFO:  2023/05/02 14:45:44 main.go:91: Starting server at port 8080
+INFO:  2023/05/02 14:56:26 main.go:60: DB has been created
+INFO:  2023/05/02 14:56:26 main.go:62: DB has been filled by examles of data
+INFO:  2023/05/02 14:56:26 main.go:91: Starting server at port 8080
+INFO:  2023/05/02 15:02:36 main.go:60: DB has been created
+INFO:  2023/05/02 15:02:36 main.go:62: DB has been filled by examles of data
+INFO:  2023/05/02 15:02:36 main.go:91: Starting server at port 8080
+INFO:  2023/05/02 15:03:42 main.go:60: DB has been created
+INFO:  2023/05/02 15:03:42 main.go:62: DB has been filled by examles of data
+INFO:  2023/05/02 15:03:42 main.go:91: Starting server at port 8080
+INFO:  2023/05/02 15:06:55 main.go:60: DB has been created
+INFO:  2023/05/02 15:06:55 main.go:62: DB has been filled by examles of data
+INFO:  2023/05/02 15:06:55 main.go:91: Starting server at port 8080
+INFO:  2023/05/02 15:07:50 main.go:91: Starting server at port 8080
+INFO:  2023/05/02 15:08:02 main.go:60: DB has been created
+INFO:  2023/05/02 15:08:02 main.go:62: DB has been filled by examles of data
+INFO:  2023/05/02 15:08:02 main.go:91: Starting server at port 8080
+INFO:  2023/05/02 15:15:19 main.go:60: DB has been created
+INFO:  2023/05/02 15:15:19 main.go:62: DB has been filled by examles of data
+INFO:  2023/05/02 15:15:19 main.go:91: Starting server at port 8080
+INFO:  2023/05/02 15:16:37 main.go:60: DB has been created
+INFO:  2023/05/02 15:16:37 main.go:62: DB has been filled by examles of data
+INFO:  2023/05/02 15:16:37 main.go:91: Starting server at port 8080
+INFO:  2023/05/02 15:18:37 main.go:60: DB has been created
+INFO:  2023/05/02 15:18:37 main.go:62: DB has been filled by examles of data
+INFO:  2023/05/02 15:18:37 main.go:91: Starting server at port 8080
+INFO:  2023/05/02 15:24:39 main.go:91: Starting server at port 8080
+>>>>>>> creatingDB
