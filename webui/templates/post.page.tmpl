@@ -4,8 +4,8 @@
 
 {{define "main"}}
     {{$loggedin := .Session.IsLoggedin}}
-    {{$likesPost := .LikesOwner.Post}}
-    {{$likesComment := .LikesOwner.Comment}}
+    {{$likesPost := .LikesStorage.Post}}
+    {{$likesComment := .LikesStorage.Comment}}
 
     <div class="post">
         {{with .Post}}
