@@ -7,7 +7,7 @@ import (
 	"net/mail"
 	"time"
 
-	"forum/app/config"
+	"forum/app/application"
 	"forum/app/templates"
 	"forum/model"
 
@@ -18,7 +18,7 @@ import (
 /*
 the signup page.  Route: /signup. Methods: POST. Template: signup
 */
-func SignupPageHandler(app *config.Application) http.HandlerFunc {
+func SignupPageHandler(app *application.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// only if it's notloggedin - needs wrapper
 
@@ -104,7 +104,7 @@ func SignupPageHandler(app *config.Application) http.HandlerFunc {
 /*
 the successreg page. Route: /signup/success. Methods: GET. Template: successreg
 */
-func SignupSuccessPageHandler(app *config.Application) http.HandlerFunc {
+func SignupSuccessPageHandler(app *application.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ses, err := checkLoggedin(app, w, r)
 		if err != nil {
@@ -161,7 +161,7 @@ func SignupSuccessPageHandler(app *config.Application) http.HandlerFunc {
 			Session: NotloggedinSession(),
 			Name:    user.Name,
 		}
-		err = templates.ExecuteTemplate(app, w, r, "successreg", output)
+		err = templates.ExecuteTemplate(app.TemlateCashe, w, r, "successreg", output)
 		if err != nil {
 			ServerError(app, w, r, "tamplate executing faild", err)
 			return
@@ -172,7 +172,7 @@ func SignupSuccessPageHandler(app *config.Application) http.HandlerFunc {
 /*
 the login page. Route: /login. Methods: POST. Template: signin
 */
-func SigninPageHandler(app *config.Application) http.HandlerFunc {
+func SigninPageHandler(app *application.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// only if it's notloggedin - needs wrapper
 		// try to add a user
@@ -240,7 +240,7 @@ func SigninPageHandler(app *config.Application) http.HandlerFunc {
 /*
 the logout handler. Route: /logout. Methods: any. Template: -
 */
-func LogoutHandler(app *config.Application) http.HandlerFunc {
+func LogoutHandler(app *application.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// get a session
 		ses, err := checkLoggedin(app, w, r)

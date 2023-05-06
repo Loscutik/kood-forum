@@ -3,12 +3,12 @@ package main
 import (
 	"net/http"
 
-	"forum/app/config"
+	"forum/app/application"
 	"forum/app/handlers"
 	"forum/app/templates"
 )
 
-func routers(app *config.Application) *http.ServeMux {
+func routers(app *application.Application) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.Handle("/", handlers.HomePageHandler(app))

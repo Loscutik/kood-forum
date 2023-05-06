@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"forum/app/config"
+	"forum/app/application"
 	"forum/app/templates"
 	"forum/model"
 )
@@ -15,7 +15,7 @@ import (
 /*
 the userinfo page. Route: /userinfo/@{{Id}}. Methods: GET. Template: userinfo
 */
-func UserPageHandler(app *config.Application) http.HandlerFunc {
+func UserPageHandler(app *application.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// only GET method is allowed
 		if r.Method != http.MethodGet {
@@ -66,7 +66,7 @@ func UserPageHandler(app *config.Application) http.HandlerFunc {
 		}
 
 		// Assembling the page from templates
-		err = templates.ExecuteTemplate(app, w, r, "userinfo", output)
+		err = templates.ExecuteTemplate(app.TemlateCashe, w, r, "userinfo", output)
 		if err != nil {
 			ServerError(app, w, r, "tamplate executing faild", err)
 			return

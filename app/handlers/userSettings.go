@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/mail"
 
-	"forum/app/config"
+	"forum/app/application"
 	"forum/app/templates"
 	"forum/model"
 
@@ -15,7 +15,7 @@ import (
 /*
 the user's settings page.  Route: /settings. Methods: GET,POST. Template: settings
 */
-func SettingsPageHandler(app *config.Application) http.HandlerFunc {
+func SettingsPageHandler(app *application.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ses, err := checkLoggedin(app, w, r)
 		if err != nil {
@@ -93,7 +93,7 @@ func SettingsPageHandler(app *config.Application) http.HandlerFunc {
 			output := &struct {
 				Session *session
 			}{Session: ses}
-			err = templates.ExecuteTemplate(app, w, r, "settings", output)
+			err = templates.ExecuteTemplate(app.TemlateCashe, w, r, "settings", output)
 			if err != nil {
 				ServerError(app, w, r, "tamplate executing faild", err)
 				return

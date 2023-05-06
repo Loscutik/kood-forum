@@ -10,34 +10,41 @@ CREATE TABLE users (
 		
 		CREATE TABLE 'posts_likes' (
 			id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-			userID INT NOT NULL REFERENCES users(id),
-			messageID INT NOT NULL REFERENCES posts(id),
+			userID INT NOT NULL,
+			messageID INT NOT NULL,
 			like BOOL NOT NULL,
-			UNIQUE (userID, messageID)
+			UNIQUE (userID, messageID),
+			FOREIGN KEY (userID) REFERENCES users(id) ON DELETE CASCADE,
+			FOREIGN KEY (messageID) REFERENCES posts(id) ON DELETE CASCADE
 		);
 		
 		CREATE TABLE 'comments_likes' (
 			id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-			userID INT NOT NULL REFERENCES users(id),
-			messageID INT NOT NULL REFERENCES comments(id),
+			userID INT NOT NULL,
+			messageID INT NOT NULL,
 			like BOOL NOT NULL,
-			UNIQUE (userID, messageID)
+			UNIQUE (userID, messageID),
+			FOREIGN KEY (userID) REFERENCES users(id) ON DELETE CASCADE,
+			FOREIGN KEY (messageID) REFERENCES posts(id) ON DELETE CASCADE
 		);
 
 		CREATE TABLE 'posts' (
 			id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 			theme TEXT NOT NULL DEFAULT ('(No theme)'),
 			content TEXT NOT NULL, 
-			authorID INT NOT NULL REFERENCES users(id),
-			dateCreate TIMESTAMP NOT NULL
+			authorID INT NOT NULL,
+			dateCreate TIMESTAMP NOT NULL,
+			FOREIGN KEY (authorID) REFERENCES users(id) ON DELETE CASCADE
 		);
 
 		CREATE TABLE 'comments' (
 			id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 			content TEXT NOT NULL, 
-			authorID INT NOT NULL REFERENCES users(id),
+			authorID INT NOT NULL,
 			dateCreate TIMESTAMP NOT NULL,
-			postID INT NOT NULL REFERENCES posts(id)
+			postID INT NOT NULL,
+			FOREIGN KEY (authorID) REFERENCES users(id) ON DELETE CASCADE,
+			FOREIGN KEY (postID) REFERENCES posts(id) ON DELETE CASCADE
 		);
 		
 		CREATE TABLE 'categories' (
@@ -47,9 +54,11 @@ CREATE TABLE users (
 		
 		CREATE TABLE 'post_categories' (
 			id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-			categoryID INT NOT NULL REFERENCES categories(id), 
-			postID INT NOT NULL REFERENCES posts(id),
-			UNIQUE (categoryID, postID)
+			categoryID INT NOT NULL, 
+			postID INT NOT NULL,
+			UNIQUE (categoryID, postID),
+			FOREIGN KEY (categoryID) REFERENCES categories(id) ON DELETE CASCADE,
+			FOREIGN KEY (postID) REFERENCES posts(id) ON DELETE CASCADE
 		);
 
 		CREATE INDEX userssession ON users (session);

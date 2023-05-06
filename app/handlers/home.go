@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"forum/app/config"
+	"forum/app/application"
 	"forum/app/templates"
 	"forum/model"
 )
@@ -13,7 +13,7 @@ import (
 /*
 The handler of the main page. Route: /. Methods: GET. Template: home
 */
-func HomePageHandler(app *config.Application) http.HandlerFunc {
+func HomePageHandler(app *application.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const (
 			AUTHOR    = "author"
@@ -94,7 +94,7 @@ func HomePageHandler(app *config.Application) http.HandlerFunc {
 			LikesStorage *likesStorage
 		}{Session: ses, Posts: posts, Categories: categories, Filter: filter, LikesStorage: defaultLikesStorage}
 		// Assembling the page from templates
-		err = templates.ExecuteTemplate(app, w, r, "home", output)
+		err = templates.ExecuteTemplate(app.TemlateCashe, w, r, "home", output)
 		if err != nil {
 			ServerError(app, w, r, "tamplate executing faild", err)
 			return

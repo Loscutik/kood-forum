@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"forum/app/config"
+	"forum/app/application"
 	"forum/app/templates"
 	"forum/model"
 )
@@ -16,7 +16,7 @@ import (
 /*
 the post's page. Route: /post/p{{Id}}. Methods: GET, POST. Template: post
 */
-func PostPageHandler(app *config.Application) http.HandlerFunc {
+func PostPageHandler(app *application.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// only GET or PUT methods are allowed
 		if r.Method != http.MethodGet && r.Method != http.MethodPost {
@@ -102,7 +102,7 @@ func PostPageHandler(app *config.Application) http.HandlerFunc {
 			LikesStorage *likesStorage
 		}{Session: ses, Post: post, LikesStorage: defaultLikesStorage}
 
-		err = templates.ExecuteTemplate(app, w, r, "post", output)
+		err = templates.ExecuteTemplate(app.TemlateCashe, w, r, "post", output)
 		if err != nil {
 			ServerError(app, w, r, "tamplate executing faild", err)
 			return

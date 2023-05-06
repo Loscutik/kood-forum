@@ -351,3 +351,29 @@ INFO:  2023/05/05 15:51:54 main.go:81: Starting server at port 8080
 INFO:  2023/05/05 16:02:56 main.go:81: Starting server at port 8080
 INFO:  2023/05/05 16:23:24 main.go:81: Starting server at port 8080
 INFO:  2023/05/05 16:29:56 main.go:81: Starting server at port 8080
+INFO:  2023/05/05 16:54:04 main.go:81: Starting server at port 8080
+INFO:  2023/05/05 17:03:51 main.go:81: Starting server at port 8080
+INFO:  2023/05/05 17:04:48 main.go:81: Starting server at port 8080
+INFO:  2023/05/05 17:20:02 main.go:81: Starting server at port 8080
+INFO:  2023/05/05 17:23:41 main.go:81: Starting server at port 8080
+INFO:  2023/05/05 17:40:24 main.go:81: Starting server at port 8080
+INFO:  2023/05/06 13:39:28 main.go:82: Starting server at port 8080
+INFO:  2023/05/06 13:39:43 main.go:82: Starting server at port 8080
+INFO:  2023/05/06 13:39:59 main.go:82: Starting server at port 7000
+INFO:  2023/05/06 13:41:42 main.go:82: Starting server at port 7000
+INFO:  2023/05/06 13:49:41 main.go:82: Starting server at port 8000
+INFO:  2023/05/06 13:49:53 main.go:82: Starting server at port 8008
+INFO:  2023/05/06 13:50:24 main.go:82: Starting server at port 8000
+INFO:  2023/05/06 16:00:50 main.go:74: Starting server at port 8000
+INFO:  2023/05/06 16:02:13 config.go:53: DB has been created
+INFO:  2023/05/06 16:02:13 config.go:66: DB has been filled by examles of data
+INFO:  2023/05/06 16:07:39 config.go:53: DB has been created
+INFO:  2023/05/06 16:07:39 config.go:66: DB has been filled by examles of data
+INFO:  2023/05/06 16:07:39 main.go:73: Starting server at port 8000
+INFO:  2023/05/06 16:10:24 main.go:73: Starting server at port 8000
+INFO:  2023/05/06 16:10:39 config.go:53: DB has been created
+INFO:  2023/05/06 16:10:39 config.go:66: DB has been filled by examles of data
+INFO:  2023/05/06 16:10:39 main.go:73: Starting server at port 8000
+INFO:  2023/05/06 16:11:08 main.go:73: Starting server at port 8000
+INFO:  2023/05/06 16:11:46 config.go:53: DB has been created
+INFO:  2023/05/06 16:11:46 main.go:73: Starting server at port 8000

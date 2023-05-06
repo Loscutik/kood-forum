@@ -4,109 +4,110 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
 
-	"forum/app/config"
+	"forum/app/application"
 	"forum/app/templates"
-	"forum/model"
 	"forum/model/sqlpkg"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
+const DB_Name = "forumDB.db"
+
 func main() {
-	// Creates logs of what happened
-	errLog := log.New(os.Stderr, "ERROR: ", log.Ldate|log.Ltime) // Creates logs of errors
-	infoLogFile, err := os.OpenFile("info.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o664)
-	if err != nil {
-		errLog.Printf("Cannot open a log file. Error is %s\nStdout will be used for the info log ", err)
-		infoLogFile = os.Stdout
-	}
-	infoLog := log.New(infoLogFile, "INFO:  ", log.Ldate|log.Ltime|log.Lshortfile)
-
-	// create template's cashe - it keeps parsed temlates
-	templates, err := templates.NewTemplateCache(templates.TEMPLATES_PATH)
-	if err != nil {
-		errLog.Fatal(err)
-	}
-
-	// init DB pool "forumDB.db"
-	var forumData *sqlpkg.ForumModel
-	_, err = os.Stat("forumDB.db")
-	if errors.Is(err, os.ErrNotExist) {
-		hashPassword, err := bcrypt.GenerateFromPassword([]byte(model.ADM_PASS), 8)
-		if err != nil {
-			errLog.Fatal("password crypting failed: ", err)
-			return
-		}
-		db, err := sqlpkg.CreateDB("forumDB.db", model.ADM_NAME, model.ADM_EMAIL, string(hashPassword))
-		if err != nil {
-			errLog.Fatal(err)
-		}
-		forumData = &sqlpkg.ForumModel{DB: db}
-		infoLog.Printf("DB has been created")
-		testDB(forumData)
-		infoLog.Printf("DB has been filled by examles of data")
-	} else {
-		db, err := sqlpkg.OpenDB("forumDB.db", "webuser", "webuser")
-		if err != nil {
-			errLog.Fatal(err)
-		}
-		forumData = &sqlpkg.ForumModel{DB: db}
-	}
-	defer forumData.DB.Close()
-
 	// app keeps all dependenses used by handlers
-	app := &config.Application{
-		ErrLog:       errLog,
-		InfoLog:      infoLog,
-		TemlateCashe: templates,
-		ForumData:   forumData,
+	app := application.New()
+	err := app.SetTemplates(templates.TEMPLATES_PATH)
+	if err != nil {
+		app.ErrLog.Fatalln(err)
 	}
 
-	port, err := parseArgs()
+	port, pristinDB, testDB, err := parseArgs()
 	if err != nil {
-		errLog.Fatal(err)
+		app.ErrLog.Fatalln(err)
 	}
+
+	// init DB pool DB_Name
+	_, err = os.Stat(DB_Name)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			createAndFillTestDB(app)
+		} else {
+			app.ErrLog.Fatalln(err)
+		}
+	} else {
+		switch {
+		case testDB:
+			if os.Rename(DB_Name, DB_Name+".bak") != nil {
+				app.ErrLog.Fatalln("cannot rename the DB file")
+			}
+			createAndFillTestDB(app)
+		case  pristinDB:
+			// rename DB file
+			if os.Rename(DB_Name, DB_Name+".bak") != nil {
+				app.ErrLog.Fatalln("cannot rename the DB file")
+			}
+
+			err := app.CreateDB(DB_Name)
+			if err != nil {
+				app.ErrLog.Fatalln(err)
+			}
+		default:
+			db, err := sqlpkg.OpenDB(DB_Name, "webuser", "webuser")
+			if err != nil {
+				app.ErrLog.Fatalln(err)
+			}
+			app.ForumData = &sqlpkg.ForumModel{DB: db}
+		}
+	}
+	defer app.ForumData.DB.Close()
+
 	// Starting the web server
 	server := &http.Server{
-		Addr:     ":" + *port,
+		Addr:     ":" + port,
 		ErrorLog: app.ErrLog,
 		Handler:  routers(app),
 	}
-	fmt.Printf("Starting server at http://www.localhost:%s\n", *port)
-	infoLog.Printf("Starting server at port %s\n", *port)
+	fmt.Printf("Starting server at http://www.localhost:%s\n", port)
+	app.InfoLog.Printf("Starting server at port %s\n", port)
 	if err := server.ListenAndServe(); err != nil {
-		errLog.Fatal(err)
+		app.ErrLog.Fatal(err)
 	}
 }
 
 // Parses the program's arguments to obtain the server port. If no arguments found, it uses the 8080 port by default
 // Usage: go run .  --port=PORT_NUMBER
-func parseArgs() (*string, error) {
-	port := flag.String("port", "8080", "server port")
+func parseArgs() (port string, pristinDB bool, testDB bool, err error) {
+	usage := `wrong arguments
+     Usage: go run ./app [OPTIONS]
+     OPTIONS: 
+            --port=PORT_NUMBER
+            --p=PORT_NUMBER
+            --pristin to drop the existing DB and create the new one from scratch
+            --testdb drop the existing DB and start with the test DB`
+	flag.StringVar(&port, "port", "8080", "server port")
+	flag.StringVar(&port, "p", "8080", "server port (shorthand)")
+	flag.BoolVar(&pristinDB, "pristin", false, "--pristin if you want drop the existing DB and create the new one from scratch")
+	flag.BoolVar(&testDB, "testdb", false, "--testdb if you want drop the existing DB and start with the test DB")
 	flag.Parse()
 	if flag.NArg() > 0 {
-		return nil, fmt.Errorf("wrong arguments\nUsage: go run .  --port=PORT_NUMBER")
+		return "", false, false, fmt.Errorf(usage)
 	}
-	_, err := strconv.ParseUint(*port, 10, 16)
+	_, err = strconv.ParseUint(port, 10, 16)
 	if err != nil {
-		return nil, fmt.Errorf("error: port must be a 16-bit unsigned number ")
+		return "", false, false, fmt.Errorf("error: port must be a 16-bit unsigned number ")
 	}
-	return port, nil
+	return
 }
 
-func testDB(forum *sqlpkg.ForumModel) error {
-	hashPassword1, err := bcrypt.GenerateFromPassword([]byte("test1"), 8)
+func createAndFillTestDB(app *application.Application) {
+	err := app.CreateDB(DB_Name)
 	if err != nil {
-		return fmt.Errorf("password crypting failed: %v", err)
+		app.ErrLog.Fatalln(err)
 	}
-	hashPassword2, err := bcrypt.GenerateFromPassword([]byte("test2"), 8)
+	err = app.FillTestDB("model/sqlpkg/testDB.sql")
 	if err != nil {
-		return fmt.Errorf("password crypting failed: %v", err)
+		app.ErrLog.Fatalln(err)
 	}
-	return forum.FillInDB("model/sqlpkg/testDB.sql", string(hashPassword1), string(hashPassword2))
 }

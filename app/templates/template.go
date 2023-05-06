@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
-
-	"forum/app/config"
 )
 
 const (
@@ -15,11 +13,13 @@ const (
 	STATIC_PATH    = "./webui/static/"
 )
 
+type TemplateCache map[string]*template.Template
+
 /*
 returnes all parsed templates
 */
-func NewTemplateCache(templateDir string) (map[string]*template.Template, error) {
-	temlateCashe := map[string]*template.Template{}
+func NewTemplateCache(templateDir string) (TemplateCache, error) {
+	temlateCashe := TemplateCache{}
 	// get all templates of pages
 
 	pages, err := filepath.Glob(filepath.Join(templateDir, "*.page.tmpl"))
@@ -53,8 +53,8 @@ func NewTemplateCache(templateDir string) (map[string]*template.Template, error)
 /*
 executes a template with the given name using the given data
 */
-func ExecuteTemplate(app *config.Application, w http.ResponseWriter, r *http.Request, name string, outputData any) error {
-	tm, ok := app.TemlateCashe[name]
+func ExecuteTemplate(templateCache TemplateCache, w http.ResponseWriter, r *http.Request, name string, outputData any) error {
+	tm, ok := templateCache[name]
 	if !ok {
 		return fmt.Errorf("the template '%s' is not found", name)
 	}
@@ -66,7 +66,10 @@ func ExecuteTemplate(app *config.Application, w http.ResponseWriter, r *http.Req
 	return nil
 }
 
-func ExecuteError(app *config.Application, w http.ResponseWriter, r *http.Request, statusCode int) {
+/*
+executes a template for the given error (statusCode)
+*/
+func ExecuteError(w http.ResponseWriter, r *http.Request, statusCode int) error {
 	var pageName string
 	switch statusCode {
 	case http.StatusNotFound:
@@ -79,12 +82,11 @@ func ExecuteError(app *config.Application, w http.ResponseWriter, r *http.Reques
 
 	tm, err := template.ParseFiles(TEMPLATES_PATH+pageName, TEMPLATES_PATH+"base.layout.tmpl") // Opens the HTML web page
 	if err != nil {
-		app.ErrLog.Printf("can't parse %s template: %v", pageName, err)
-		http.Error(w, fmt.Sprintf("ERROR: %s. ", http.StatusText(statusCode)), statusCode)
+		return fmt.Errorf("can't parse %s template: %v", pageName, err)
 	}
 	err = tm.Execute(w, nil)
 	if err != nil {
-		app.ErrLog.Printf("can't execute  %s template: %v", pageName, err)
-		http.Error(w, fmt.Sprintf("ERROR: %s. ", http.StatusText(statusCode)), statusCode)
+		return fmt.Errorf("can't execute  %s template: %v", pageName, err)
 	}
+	return nil
 }

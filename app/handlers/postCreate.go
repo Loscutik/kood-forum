@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"forum/app/config"
+	"forum/app/application"
 	"forum/app/templates"
 	"forum/model"
 )
@@ -15,7 +15,7 @@ import (
 /*
 the add post page. Route: /addpost. Methods: GET. Template: addpost
 */
-func AddPostPageHandler(app *config.Application) http.HandlerFunc {
+func AddPostPageHandler(app *application.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// only GET methode is allowed
 		if r.Method != http.MethodGet {
@@ -46,7 +46,7 @@ func AddPostPageHandler(app *config.Application) http.HandlerFunc {
 			Session    *session
 			Categories []*model.Category
 		}{Session: ses, Categories: categories}
-		err = templates.ExecuteTemplate(app, w, r, "addpost", output)
+		err = templates.ExecuteTemplate(app.TemlateCashe, w, r, "addpost", output)
 		if err != nil {
 			ServerError(app, w, r, "tamplate executing faild", err)
 			return
@@ -61,7 +61,7 @@ func AddPostPageHandler(app *config.Application) http.HandlerFunc {
 /*
 the post creating handler. Route: /post/create. Methods: POST. Template: -
 */
-func PostCreatorHandler(app *config.Application) http.HandlerFunc {
+func PostCreatorHandler(app *application.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// only POST method is allowed
 		if r.Method != http.MethodPost {

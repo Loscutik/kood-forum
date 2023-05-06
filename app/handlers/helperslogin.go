@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"forum/app/config"
+	"forum/app/application"
 	"forum/model"
 
 	"github.com/gofrs/uuid"
@@ -50,7 +50,7 @@ returns session which contains status of login and uses's data if it's logged in
 If it is left lrss than 30 sec to expiried time, it will refresh the session
 If an error occurs it will response to the client with error status and return the error
 */
-func checkLoggedin(app *config.Application, w http.ResponseWriter, r *http.Request) (*session, error) {
+func checkLoggedin(app *application.Application, w http.ResponseWriter, r *http.Request) (*session, error) {
 	session := &session{notloggedin, nil}
 	cook, err := r.Cookie("SID")
 	if err != nil && err != http.ErrNoCookie {

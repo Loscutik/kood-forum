@@ -96,7 +96,6 @@ func (f *ForumModel) FillInDB(fileName string, params ...any) error {
 	if err != nil {
 		return fmt.Errorf("reading creatingDB.sql faild: %v", err)
 	}
-	fmt.Println(string( query))
 	// use a  transaction
 	tx, err := f.DB.Begin()
 	if err != nil {
