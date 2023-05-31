@@ -526,4 +526,8 @@ a {
   .slider.round:before {
     border-radius: 50%;
   }
+
+  #images {
+    width: 90%;
+  }
   

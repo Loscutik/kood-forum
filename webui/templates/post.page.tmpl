@@ -4,6 +4,7 @@
 
 {{define "main"}}
     {{$loggedin := .Session.IsLoggedin}}
+    {{$loggedUser := .Session.User}}
     {{$likesPost := .LikesStorage.Post}}
     {{$likesComment := .LikesStorage.Comment}}
 
@@ -12,9 +13,21 @@
             <p id ={{.ID}} class="post-id">#{{.ID}} by {{template "linkuser" .}} {{range .Categories}} <span id={{.ID}}>, #{{.Name}}</span>{{end}}</p>
             <div id="{{.ID}}-content" class="post-content">
                 <p><b>{{.Theme}}</b></p>
-                {{.Message.Content}}
+                <p>{{.Message.Content}}</p>
+                <div id="images">
+                    {{range .Message.Images}}
+                        <img src="{{.}}"/>
+                    {{end}}
+                </div>
             </div>
         {{end}}
+
+        {{with .Post}}
+            {{if eq $loggedUser.ID .ID}}
+                <button id="{{.ID}}-post_image_download" messageID="{{.ID}}" messageType="p"  class="signinupformbutton" name="posts_image_download" onclick="imageDownload(this.id)"></button>
+            {{end}}
+        {{end}}
+
         <div id="reactions">
             {{if $loggedin}}
                 {{with .Post}}
@@ -34,8 +47,18 @@
         <div id="comments-{{.ID}}" class="post">
             <p class="post-id">#{{.ID}} by {{template "linkuser" .}} </p>
             <div id="{{.ID}}-comment-content" class="post-content">
-                {{.Message.Content}}
+                <p>{{.Message.Content}}</p>
+                <div id="images">
+                    {{range .Message.Images}}
+                        <img src="{{.}}"/>
+                    {{end}}
+                </div>
             </div>
+
+            {{if eq $loggedUser.ID .ID}}
+                <button id="{{.ID}}-post_image_download" messageID="{{.ID}}" messageType="p"  class="signinupformbutton" name="posts_image_download" onclick="imageDownload(this.id)"></button>
+            {{end}}
+    
             <div id="reactions">
                 {{if $loggedin}}
                     <span id="{{.ID}}-comments_likes-true-n">{{index .Message.Likes 0}}</span><button id="{{.ID}}-comments_likes-true" messageID="{{.ID}}" messageType="{{$likesComment}}" like="true" class="likeicon" name="comment-true"  onclick="handleLike(this.id)"><img class="likeicon" src="https://cdn-icons-png.flaticon.com/512/3128/3128316.png"></img></button>

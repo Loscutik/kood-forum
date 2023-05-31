@@ -46,6 +46,28 @@ func TestCreateDB(t *testing.T) {
 	}
 	fmt.Println("----end-----")
 }
+func TestDeletePost(t *testing.T) {
+	db, err := OpenDB("database.db","webuser","webuser")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
+	f := ForumModel{db}
+
+	q := `DELETE FROM posts  WHERE id=3`
+	res, err := f.DB.Exec(q)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	postID, err := res.RowsAffected()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Printf("---id=%d-------\n", postID)
+}
 
 func TestInsertPost(t *testing.T) {
 	db, err := OpenDB("database.db","webuser","webuser")

@@ -102,8 +102,8 @@ function changingFormSignin() {
 function handleLike(id) {
   // needed : "messageType"("posts_likes", "comments_likes") "messageID"(#)  "like"(bool) 
   const clickedElement = document.getElementById(id);
-  var messageType = clickedElement.getAttribute("messageType");
-  var messageID = clickedElement.getAttribute("messageID");
+  let messageType = clickedElement.getAttribute("messageType");
+  let messageID = clickedElement.getAttribute("messageID");
   const labelLike = document.getElementById(messageID + "-" + messageType + "-true-n");
   const labelDislike = document.getElementById(messageID + "-" + messageType + "-false-n");
   // create a request with JSON data
@@ -133,6 +133,39 @@ function handleLike(id) {
     });
 }
 
+function imageDownload(id) {
+  // needed : "messageType"("p", "c") "messageID"(#) 
+  const clickedElement = document.getElementById(id);
+  let messageType = clickedElement.getAttribute("messageType");
+  let messageID = clickedElement.getAttribute("messageID");
+  const labelLike = document.getElementById(messageID + "-" + messageType + "-true-n");
+  const labelDislike = document.getElementById(messageID + "-" + messageType + "-false-n");
+  // create a request with JSON data
+  let data = {
+    messageType: messageType,
+    messageID: messageID,
+    like: clickedElement.getAttribute("like"),
+  };
+  const headers = new Headers();
+  headers.append('Content-Type', 'application/json');
+
+  fetch("/liking", {
+    method: "POST",
+    headers: headers,
+    credentials: "same-origin",
+    redirect: "follow",
+    body: JSON.stringify(data)
+  }).then(res => {
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
+    return res.json();
+  })
+    .then(likes => {
+      labelLike.innerHTML = likes["like"];
+      labelDislike.innerHTML = likes["dislike"];
+    });
+}
 function darkness() {
   document.getElementById("darkness").style.display = "none";
   document.getElementById("signinform").style.display = "none";

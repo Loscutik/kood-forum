@@ -18,7 +18,7 @@ type ForumModel struct {
 
 func OpenDB(name, user, pass string) (*sql.DB, error) {
 	// init pull (not connection)
-	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s?_auth&_auth_user=%s&_auth_pass=%s", name, user, pass))
+	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s?_auth&_auth_user=%s&_auth_pass=%s&_foreign_keys=on", name, user, pass))
 	if err != nil {
 		return nil, err
 	}
@@ -52,6 +52,7 @@ func CreateDB(name, admName, admEmail, admPass string) (*sql.DB, error) {
 		return nil, fmt.Errorf("reading creatingDB.sql faild: %v", err)
 	}
 
+	db.Exec("PRAGMA foreign_keys = ON;")
 	// use a  transaction
 	tx, err := db.Begin()
 	if err != nil {
