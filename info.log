@@ -432,3 +432,4 @@ INFO:  2023/06/01 22:52:26 config.go:53: DB has been created
 INFO:  2023/06/01 22:52:26 config.go:66: DB has been filled by examles of data
 INFO:  2023/06/01 22:52:26 main.go:73: Starting server at port 8080
 INFO:  2023/06/01 22:53:54 main.go:73: Starting server at port 8080
+INFO:  2023/06/01 22:57:07 main.go:73: Starting server at port 8080
