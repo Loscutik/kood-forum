@@ -13,9 +13,9 @@ import (
 /*
 inserts a new post into DB, returns an ID for the post
 */
-func (f *ForumModel) InsertPost(theme, content string, authorID int, dateCreate time.Time, categoriesID []int) (int, error) {
-	q := `INSERT INTO posts (theme, content, authorID, dateCreate) VALUES (?,?,?,?)`
-	res, err := f.DB.Exec(q, theme, content, authorID, dateCreate)
+func (f *ForumModel) InsertPost(theme, content string, images []string, authorID int, dateCreate time.Time, categoriesID []int) (int, error) {
+	q := `INSERT INTO posts (theme, content, images, authorID, dateCreate) VALUES (?,?,?,?,?)`
+	res, err := f.DB.Exec(q, theme, content, strings.Join(images, ","), authorID, dateCreate)
 	if err != nil {
 		return 0, err
 	}
@@ -51,7 +51,7 @@ func (f *ForumModel) InsertPost(theme, content string, authorID int, dateCreate 
 search in the DB a post by the given ID
 */
 func (f *ForumModel) GetPostByID(id int) (*model.Post, error) {
-	query := `SELECT p.id, p.theme, p.content, p.authorID, u.name, u.dateCreate, c.id, c.name,  p.dateCreate, 
+	query := `SELECT p.id, p.theme, p.content, p.images, p.authorID, u.name, u.dateCreate, c.id, c.name,  p.dateCreate, 
 				 count(CASE WHEN pl.like THEN TRUE END), count(CASE WHEN NOT pl.like THEN TRUE END) 
 			  FROM posts p
  			  LEFT JOIN users u ON u.id=p.authorID
@@ -105,7 +105,7 @@ func (f *ForumModel) GetPostByID(id int) (*model.Post, error) {
 	rows.Close()
 
 	query = `-- select comments.
-		SELECT c.id, c.content, c.authorID, u.name, u.dateCreate, c.dateCreate, 
+		SELECT c.id, c.content, c.images, c.authorID, u.name, u.dateCreate, c.dateCreate, 
 			count(CASE WHEN cl.like THEN TRUE END), count(CASE WHEN NOT cl.like THEN TRUE END) 
 	    FROM comments c
 		LEFT JOIN users u ON u.id=c.authorID
@@ -124,12 +124,13 @@ func (f *ForumModel) GetPostByID(id int) (*model.Post, error) {
 		comment := &model.Comment{}
 		comment.Message.Author = &model.User{}
 		comment.Message.Likes = make([]int, model.N_LIKES)
+		var images sql.NullString
 
 		// parse the row with fields:
-		// c.id, c.content, c.authorID, u.name, u.dateCreate, c.dateCreate,
+		// c.id, c.content, c.images, c.authorID, u.name, u.dateCreate, c.dateCreate,
 		// count(CASE WHEN cl.like THEN TRUE END), count(CASE WHEN NOT cl.like THEN TRUE END)
 		err := rows.Scan(&comment.ID,
-			&comment.Message.Content,
+			&comment.Message.Content, &images,
 			&comment.Message.Author.ID, &comment.Message.Author.Name, &comment.Message.Author.DateCreate,
 			&comment.Message.DateCreate,
 			&comment.Message.Likes[model.LIKE], &comment.Message.Likes[model.DISLIKE],
@@ -137,7 +138,7 @@ func (f *ForumModel) GetPostByID(id int) (*model.Post, error) {
 		if err != nil {
 			return nil, err
 		}
-
+		comment.Message.Images=getImagesArray(images)
 		post.Comments = append(post.Comments, comment)
 	}
 
@@ -145,9 +146,16 @@ func (f *ForumModel) GetPostByID(id int) (*model.Post, error) {
 		return nil, err
 	}
 
-	post.CommentsQuantity=len(post.Comments)
+	post.CommentsQuantity = len(post.Comments)
 
 	return post, nil
+}
+
+func getImagesArray(imagesStr sql.NullString)[]string{
+	if(imagesStr.Valid){
+		return strings.Split(imagesStr.String,",")
+	}
+	return nil
 }
 
 /*
@@ -158,17 +166,20 @@ func rowScanForPostByID(rows *sql.Rows) (*model.Post, *model.Category, error) {
 	post.Message.Likes = make([]int, model.N_LIKES)
 	post.Message.Author = &model.User{}
 	category := &model.Category{}
+	var images sql.NullString
 
 	// parse the row with fields:
-	// p.id, p.theme, p.content, p.authorID, u.name, u.dateCreate, c.id, c.name,  p.dateCreate,
+	// p.id, p.theme, p.content, p.images, p.authorID, u.name, u.dateCreate, c.id, c.name,  p.dateCreate,
 	// count(CASE WHEN pl.like THEN TRUE END), count(CASE WHEN NOT pl.like THEN TRUE END)
 	err := rows.Scan(&post.ID, &post.Theme,
-		&post.Message.Content,
+		&post.Message.Content, &images,
 		&post.Message.Author.ID, &post.Message.Author.Name, &post.Message.Author.DateCreate,
 		&category.ID, &category.Name,
 		&post.Message.DateCreate,
 		&post.Message.Likes[model.LIKE], &post.Message.Likes[model.DISLIKE],
 	)
+
+	post.Message.Images=getImagesArray(images)
 
 	return post, category, err
 }
@@ -203,12 +214,12 @@ func (f *ForumModel) GetPosts(filter *model.Filter) ([]*model.Post, error) {
 				condition += ` p.id IN (SELECT messageID FROM posts_likes pl  WHERE pl.userID = ? AND pl.like=true) AND `
 				arguments = append(arguments, filter.LikedByUserID)
 			}
-			
+
 			if filter.DisLikedByUserID != 0 {
 				condition += ` p.id IN (SELECT messageID FROM posts_likes pl  WHERE pl.userID = ? AND pl.like=false) AND `
 				arguments = append(arguments, filter.DisLikedByUserID)
 			}
-			
+
 			condition = strings.TrimSuffix(condition, `AND `)
 			return f.getPostsByCondition(condition, arguments)
 		}
@@ -236,7 +247,7 @@ func (f *ForumModel) GetPostsLikedByUser(userID int) ([]*model.Post, error) {
 addes the condition to a query and run it. Returnes found posts
 */
 func (f *ForumModel) getPostsByCondition(condition string, arguments []any) ([]*model.Post, error) {
-	query := `SELECT p.id, p.theme, p.content, p.authorID, u.name, u.dateCreate, c.id, c.name,  p.dateCreate, 
+	query := `SELECT p.id, p.theme, p.content, p.images, p.authorID, u.name, u.dateCreate, c.id, c.name,  p.dateCreate, 
 				(SELECT count(id) FROM comments cm WHERE cm.postID=p.id),
 				count(CASE WHEN pl.like THEN TRUE END), count(CASE WHEN NOT pl.like THEN TRUE END) 
 		  FROM posts p
@@ -302,17 +313,20 @@ func rowScanForPosts(rows *sql.Rows) (*model.Post, *model.Category, *model.User,
 	post.Message.Likes = make([]int, model.N_LIKES)
 	author := &model.User{}
 	category := &model.Category{}
+	var images sql.NullString
 
 	// parse the row with fields:
-	// p.id, p.theme, p.content,  p.authorID, u.name, u.dateCreate, c.id, c.name,  p.dateCreate, count (cm.id),
+	// p.id, p.theme, p.content,  p.images, p.authorID, u.name, u.dateCreate, c.id, c.name,  p.dateCreate, count (cm.id),
 	// count(CASE WHEN pl.like THEN TRUE END), count(CASE WHEN NOT pl.like THEN TRUE END)
-	err := rows.Scan(&post.ID, &post.Theme, &post.Message.Content,
+	err := rows.Scan(&post.ID, &post.Theme, &post.Message.Content, &images,
 		&author.ID, &author.Name, &author.DateCreate,
 		&category.ID, &category.Name,
 		&post.Message.DateCreate,
 		&post.CommentsQuantity,
 		&post.Message.Likes[model.LIKE], &post.Message.Likes[model.DISLIKE],
 	)
+	post.Message.Images=getImagesArray(images)
+
 	return post, category, author, err
 }
 

@@ -25,5 +25,7 @@ func routers(app *application.Application) *http.ServeMux {
 
 	fileServer := http.FileServer(http.Dir(templates.STATIC_PATH))
 	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
+	fsUsersImages := http.FileServer(http.Dir(handlers.USER_IMAGES_DIR))
+	mux.Handle("/images/", http.StripPrefix("/images/", fsUsersImages))
 	return mux
 }

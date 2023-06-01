@@ -23,8 +23,21 @@
         {{end}}
 
         {{with .Post}}
-            {{if eq $loggedUser.ID .ID}}
-                <button id="{{.ID}}-post_image_download" messageID="{{.ID}}" messageType="p"  class="signinupformbutton" name="posts_image_download" onclick="imageDownload(this.id)"></button>
+            {{if and $loggedin (eq $loggedUser.ID .ID)}}
+                <div>
+                    <label for="p-{{.ID}}-image_uploads"  class="signinupformbutton labelfordownload" >Download</label>
+                    <input
+                        type="file"
+                        class="hidden image_uploads"
+                        id="p-{{.ID}}-image_uploads" 
+                        messageType="p" messageID="{{.ID}}" 
+                        name="images"
+                        accept=".jpg, .jpeg, .png, svg, gif, bmp"
+                        onclick="imageDownload(this.id)"/>
+                </div>
+                <div id="p-{{.ID}}-preview" class="preview">
+                    <p>No files currently selected for upload</p>
+                </div>
             {{end}}
         {{end}}
 
@@ -55,8 +68,21 @@
                 </div>
             </div>
 
-            {{if eq $loggedUser.ID .ID}}
-                <button id="{{.ID}}-post_image_download" messageID="{{.ID}}" messageType="p"  class="signinupformbutton" name="posts_image_download" onclick="imageDownload(this.id)"></button>
+             {{if and $loggedin (eq $loggedUser.ID .ID)}}
+                <div>
+                    <label for="c-{{.ID}}-image_upload"  class="signinupformbutton labelfordownload"  onclick="imageDownload(this.id)">Download</label>
+                    <input
+                        type="file"
+                        class="hidden image_uploads"
+                        id="c-{{.ID}}-image_uploads" 
+                        messageType="c" messageID="{{.ID}}" 
+                        name="images"
+                        accept=".jpg, .jpeg, .png, svg, gif, bmp"
+                        />
+                </div>
+                <div id="c-{{.ID}}-preview" class="preview">
+                    <p>No files currently selected for upload</p>
+                </div>
             {{end}}
     
             <div id="reactions">
@@ -71,10 +97,25 @@
         </div>
     {{end}}
     {{if .Session.IsLoggedin}}
-        <form id="writecomment" class="post" method="post" onsubmit="return validateComment()">
+        <form id="writecomment" class="post" method="post" enctype="multipart/form-data" onsubmit="return validateComment()">
             <input id="invisible" name="authorID" value="{{.Session.User.ID}}"></input>
             <textarea id="newcomment" name="content" placeholder="Write your comment..." onclick="checkComment()"></textarea>
+            <div>
+                <label for="image_uploads"  class="signinupformbutton labelfordownload" >Download</label>
+                <input
+                    type="file"
+                    class="hidden image_uploads"
+                    id="image_uploads" 
+                    name="images"
+                    accept=".jpg, .jpeg, .png, svg, gif, bmp"
+                    multiple/>
+                </div>
+            <div id="preview" class="preview">
+                <p>No files currently selected for upload</p>
+            </div>
             <button id="submitcomment" class="signinupformbutton">Submit</button>
         </form>
     {{end}}
+<script>choseImage()</script>
+
 {{end}}  

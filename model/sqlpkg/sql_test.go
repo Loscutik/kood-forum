@@ -46,8 +46,9 @@ func TestCreateDB(t *testing.T) {
 	}
 	fmt.Println("----end-----")
 }
+
 func TestDeletePost(t *testing.T) {
-	db, err := OpenDB("database.db","webuser","webuser")
+	db, err := OpenDB("database.db", "webuser", "webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +71,7 @@ func TestDeletePost(t *testing.T) {
 }
 
 func TestInsertPost(t *testing.T) {
-	db, err := OpenDB("database.db","webuser","webuser")
+	db, err := OpenDB("database.db", "webuser", "webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -78,7 +79,7 @@ func TestInsertPost(t *testing.T) {
 
 	f := ForumModel{db}
 
-	id, err := f.InsertPost("theme1", "it's content1", 1, time.Date(2023, time.March, 7, 12, 12, 21, 0, time.UTC), []int{1, 2, 3})
+	id, err := f.InsertPost("theme1", "it's content1", []string{}, 1, time.Date(2023, time.March, 7, 12, 12, 21, 0, time.UTC), []int{1, 2, 3})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -87,7 +88,7 @@ func TestInsertPost(t *testing.T) {
 }
 
 func TestLikes(t *testing.T) {
-	db, err := OpenDB("database.db","webuser","webuser")
+	db, err := OpenDB("database.db", "webuser", "webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -127,7 +128,7 @@ func TestLikes(t *testing.T) {
 }
 
 func TestGetLikes(t *testing.T) {
-	db, err := OpenDB("database.db","webuser","webuser")
+	db, err := OpenDB("database.db", "webuser", "webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -141,30 +142,28 @@ func TestGetLikes(t *testing.T) {
 		t.Fatal(err)
 	}
 	fmt.Printf("%v\n", likes)
-	
-	
+
 	fmt.Println("--get likes for post 3 by user 2--")
-	id,like, err := f.GetUsersPostLike(2,3)
+	id, like, err := f.GetUsersPostLike(2, 3)
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Printf("id= %d, like=%v\n",id, like)
+	fmt.Printf("id= %d, like=%v\n", id, like)
 	/*
-	fmt.Println("--get likes for post 1 by user 2 (no)--")
-	id,like, err = f.GetUsersPostLike(2,1)
-	if err != nil {
-		t.Fatal(err)
-	}
-	fmt.Printf("id= %d, like=%v\n",id, like)
+		fmt.Println("--get likes for post 1 by user 2 (no)--")
+		id,like, err = f.GetUsersPostLike(2,1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		fmt.Printf("id= %d, like=%v\n",id, like)
 	*/
 	fmt.Println("--get likes for post 1 by user 3 (no)--")
-	id,like, err = f.GetUsersPostLike(3,1)
-	fmt.Printf("err=%v, type err - %T\n", err,err)
+	id, like, err = f.GetUsersPostLike(3, 1)
+	fmt.Printf("err=%v, type err - %T\n", err, err)
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Printf("id= %d, like=%v\n",id, like)
-	
+	fmt.Printf("id= %d, like=%v\n", id, like)
 }
 
 func (f *ForumModel) printLikes(table string) error {
@@ -194,7 +193,7 @@ func (f *ForumModel) printLikes(table string) error {
 }
 
 func TestGetPosts(t *testing.T) {
-	db, err := OpenDB("database.db","webuser","webuser")
+	db, err := OpenDB("database.db", "webuser", "webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -288,7 +287,7 @@ func TestGetPosts(t *testing.T) {
 	fmt.Println("--get posts category 1,2--")
 	filter = &model.Filter{
 		AuthorID:      0,
-		CategoryID:    []int{1,2},
+		CategoryID:    []int{1, 2},
 		LikedByUserID: 0,
 	}
 	posts, err = f.GetPosts(filter)
@@ -301,7 +300,7 @@ func TestGetPosts(t *testing.T) {
 }
 
 func TestGetPostsByCategory(t *testing.T) {
-	db, err := OpenDB("database.db","webuser","webuser")
+	db, err := OpenDB("database.db", "webuser", "webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -330,7 +329,7 @@ func TestGetPostsByCategory(t *testing.T) {
 }
 
 func TestGetPostsLikedByUser(t *testing.T) {
-	db, err := OpenDB("database.db","webuser","webuser")
+	db, err := OpenDB("database.db", "webuser", "webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -369,7 +368,7 @@ func TestGetPostsLikedByUser(t *testing.T) {
 }
 
 func TestGetPostByDI(t *testing.T) {
-	db, err := OpenDB("database.db","webuser","webuser")
+	db, err := OpenDB("database.db", "webuser", "webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -394,7 +393,7 @@ func TestGetPostByDI(t *testing.T) {
 }
 
 func TestInsertComment(t *testing.T) {
-	db, err := OpenDB("database.db","webuser","webuser")
+	db, err := OpenDB("database.db", "webuser", "webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -402,7 +401,7 @@ func TestInsertComment(t *testing.T) {
 
 	f := ForumModel{db}
 
-	id, err := f.InsertComment(2, "comment 2 tto post 2", 1, time.Date(2023, time.March, 8, 12, 12, 21, 0, time.UTC))
+	id, err := f.InsertComment(2, "comment 2 tto post 2", []string{}, 1, time.Date(2023, time.March, 8, 12, 12, 21, 0, time.UTC))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -411,7 +410,7 @@ func TestInsertComment(t *testing.T) {
 }
 
 func TestAddUserSession(t *testing.T) {
-	db, err := OpenDB("database.db","webuser","webuser")
+	db, err := OpenDB("database.db", "webuser", "webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -425,7 +424,7 @@ func TestAddUserSession(t *testing.T) {
 }
 
 func TestInsertUser(t *testing.T) {
-	db, err := OpenDB("database.db","webuser","webuser")
+	db, err := OpenDB("database.db", "webuser", "webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -441,7 +440,7 @@ func TestInsertUser(t *testing.T) {
 }
 
 func TestGetUserBySession(t *testing.T) {
-	db, err := OpenDB("database.db","webuser","webuser")
+	db, err := OpenDB("database.db", "webuser", "webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -458,7 +457,7 @@ func TestGetUserBySession(t *testing.T) {
 }
 
 func TestGetUserByID(t *testing.T) {
-	db, err := OpenDB("database.db","webuser","webuser")
+	db, err := OpenDB("database.db", "webuser", "webuser")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -475,7 +474,7 @@ func TestGetUserByID(t *testing.T) {
 }
 
 func TestAuthenDB(t *testing.T) {
-	db, err := OpenDB("database.db","webuser","webuser") // open as not admin
+	db, err := OpenDB("database.db", "webuser", "webuser") // open as not admin
 	if err != nil {
 		t.Fatal(err)
 	}

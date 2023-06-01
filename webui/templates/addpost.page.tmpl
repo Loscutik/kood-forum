@@ -6,10 +6,25 @@
     
     <div>
         <div class="post">
-            <form id="pform" name="pform" action="/post/create" method="post" onclick="CheckValidatePost();">
+            <form id="pform" name="pform" action="/post/create" method="post" enctype="multipart/form-data" onclick="CheckValidatePost();">
                 <input  id="invisible" name="authorID" value="{{.Session.User.ID}}"></input>
                 <input type="text" id="PostTopic" name="theme" placeholder="Header"><br><br>
                 <textarea id="textarea_newpost" name="content" placeholder="Enter your text here..."></textarea><br><br>
+                
+                <div>
+                    <label for="image_uploads"  class="signinupformbutton labelfordownload" >Download</label>
+                    <input
+                        type="file"
+                        class="hidden image_uploads"
+                        id="image_uploads" 
+                        name="images"
+                        accept=".jpg, .jpeg, .png, svg, gif, bmp"
+                        multiple/>
+                </div>
+                <div id="preview" class="preview">
+                    <p>No files currently selected for upload</p>
+                </div>
+
                 <div id="choosepostcategory">
                 <label for="checkbox" id="choosetags">Choose tags:</label><br><br>
                 {{range .Categories}}
@@ -20,4 +35,7 @@
             </form>
         </div>
     </div>
+
+    <script>choseImage()</script>
+
 {{end}}   

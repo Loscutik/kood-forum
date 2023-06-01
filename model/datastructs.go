@@ -50,6 +50,7 @@ type message struct {
 	Content    string
 	DateCreate time.Time
 	Likes      []int // index 0 keeps number of likes, index 1 keeps number of dislikes
+	Images []string
 }
 
 type Post struct {

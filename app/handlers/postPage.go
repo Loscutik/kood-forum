@@ -3,7 +3,10 @@ package handlers
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"net/http"
+	"os"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -44,6 +47,7 @@ func PostPageHandler(app *application.Application) http.HandlerFunc {
 			return
 		}
 
+		postsImagesDir := path.Join(USER_IMAGES_DIR, fmt.Sprintf("p%d", postID))
 		if r.Method == http.MethodPost { // => creating a comment
 			// only for authorisated
 			if ses.LoginStatus == experied {
@@ -56,13 +60,32 @@ func PostPageHandler(app *application.Application) http.HandlerFunc {
 			}
 			// continue for the loggedin status only
 			// get data from the request
-			err := r.ParseForm()
-			if err != nil {
-				ServerError(app, w, r, "parsing form error", err)
+			if err := r.ParseMultipartForm(MaxUploadSize); err != nil {
+				ServerError(app, w, r, "Cannot parse multipart form", err)
 				return
 			}
 
+			dateCreate := time.Now()
 			content := r.PostFormValue(F_CONTENT)
+			imageFiles := r.MultipartForm.File[F_IMAGES]
+
+			imagesTmpDir := path.Join(USER_IMAGES_DIR, fmt.Sprintf("tmp_%d%d_%d", dateCreate.Second(), dateCreate.Nanosecond(), rand.Intn(100)))
+			if imageFiles != nil {
+				err := os.Mkdir(imagesTmpDir, 0o777)
+				if err != nil && !os.IsExist(err) {
+					ServerError(app, w, r, "Can't create tmp directory", err)
+					return
+				}
+			}
+			var imagesList []string
+			for _, fileHeader := range imageFiles {
+				newFileName, err := uploadFile(MaxFileUploadSize, fileHeader, imagesTmpDir)
+				imagesList = append(imagesList, newFileName)
+				if err != nil {
+					ServerError(app, w, r, "Can't upload the file", err)
+					return
+				}
+			}
 
 			authorID, err := strconv.Atoi(r.PostFormValue(F_AUTHORID))
 			if err != nil || authorID < 1 {
@@ -70,18 +93,35 @@ func PostPageHandler(app *application.Application) http.HandlerFunc {
 				return
 			}
 
-			dateCreate := time.Now()
-			if strings.TrimSpace(content) == "" {
+			if strings.TrimSpace(content) == "" && len(imagesList) == 0 {
 				ClientError(app, w, r, http.StatusBadRequest, "comment creating failed: empty data")
 				return
 			}
 
 			// add the comment to the DB
-			_, err = app.ForumData.InsertComment(postID, content, authorID, dateCreate)
+			_, err = app.ForumData.InsertComment(postID, content, imagesList, authorID, dateCreate)
 			if err != nil {
 				ServerError(app, w, r, "insert a comment to DB failed", err)
 				return
 			}
+
+			err = os.Mkdir(postsImagesDir, 0o777)
+			if err != nil && !os.IsExist(err) {
+				ServerError(app, w, r, fmt.Sprintf("Can't create directory %s", postsImagesDir), err)
+				return
+			}
+			for _, imageName := range imagesList {
+				err = os.Rename(path.Join(imagesTmpDir, imageName), path.Join(postsImagesDir, imageName))
+				if err != nil {
+					ServerError(app, w, r, fmt.Sprintf("failed renaming file in the tmp path to %s", path.Join(postsImagesDir, imageName)), err)
+					return
+				}
+			}
+			err = os.RemoveAll(imagesTmpDir)
+			if err != nil {
+				app.ErrLog.Printf("cannot remove directory %s", imagesTmpDir) 
+			}
+
 		}
 
 		// get the post from DB
@@ -93,6 +133,16 @@ func PostPageHandler(app *application.Application) http.HandlerFunc {
 			}
 			ServerError(app, w, r, "getting a post faild", err)
 			return
+		}
+
+		for i, imageName := range post.Message.Images {
+			post.Message.Images[i] = path.Join("/", postsImagesDir, imageName)
+		}
+
+		for comNum, comment := range post.Comments {
+			for i, imageName := range comment.Message.Images {
+				post.Comments[comNum].Message.Images[i] = path.Join("/", postsImagesDir, imageName)
+			}
 		}
 
 		// create a page

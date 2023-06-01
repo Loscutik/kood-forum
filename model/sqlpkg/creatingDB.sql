@@ -31,7 +31,8 @@
 		CREATE TABLE 'posts' (
 			id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 			theme TEXT NOT NULL DEFAULT ('(No theme)'),
-			content TEXT NOT NULL, 
+			content TEXT NOT NULL,
+			images TEXT, 
 			authorID INT NOT NULL,
 			dateCreate TIMESTAMP NOT NULL,
 			FOREIGN KEY (authorID) REFERENCES users(id) ON DELETE CASCADE
@@ -39,7 +40,8 @@
 
 		CREATE TABLE 'comments' (
 			id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-			content TEXT NOT NULL, 
+			content TEXT NOT NULL,  
+			images TEXT, 
 			authorID INT NOT NULL,
 			dateCreate TIMESTAMP NOT NULL,
 			postID INT NOT NULL,

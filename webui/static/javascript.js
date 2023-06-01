@@ -136,36 +136,40 @@ function handleLike(id) {
 function imageDownload(id) {
   // needed : "messageType"("p", "c") "messageID"(#) 
   const clickedElement = document.getElementById(id);
-  let messageType = clickedElement.getAttribute("messageType");
-  let messageID = clickedElement.getAttribute("messageID");
-  const labelLike = document.getElementById(messageID + "-" + messageType + "-true-n");
-  const labelDislike = document.getElementById(messageID + "-" + messageType + "-false-n");
-  // create a request with JSON data
-  let data = {
-    messageType: messageType,
-    messageID: messageID,
-    like: clickedElement.getAttribute("like"),
-  };
-  const headers = new Headers();
-  headers.append('Content-Type', 'application/json');
 
-  fetch("/liking", {
+  const imageFile = clickedElement.files?.[0];
+  if (!imageFile) { return; }
+  // create a request
+
+  const formData = new FormData();
+
+  formData.append("messageType", clickedElement.getAttribute("messageType"));
+  formData.messageID("accountnum", clickedElement.getAttribute("messageID"));
+
+  // HTML file input, chosen by user
+  formData.append("imagefile", imageFile);
+
+
+  // send the POST request to the server
+  fetch("/imagedownload", {
     method: "POST",
-    headers: headers,
+    // headers: headers,
     credentials: "same-origin",
-    redirect: "follow",
-    body: JSON.stringify(data)
-  }).then(res => {
+    redirect: "error",
+    body: formData
+  }).then((res) => {
     if (!res.ok) {
       throw new Error(`HTTP error! Status: ${res.status}`);
     }
-    return res.json();
-  })
-    .then(likes => {
-      labelLike.innerHTML = likes["like"];
-      labelDislike.innerHTML = likes["dislike"];
-    });
+    return res.text();
+  }).then((fileUrl) => {
+    const imageDiv = document.getElementById("images");
+    const img = document.createElement('img');
+    img.setAttribute("src", fileUrl);
+    imageDiv.appendChild(img);
+  });
 }
+
 function darkness() {
   document.getElementById("darkness").style.display = "none";
   document.getElementById("signinform").style.display = "none";
@@ -382,16 +386,26 @@ function CheckCheckBox() {
 
 function validateComment() {
   var z = document.forms["writecomment"]["content"].value;
-  if (z.trim() == "") {
+
+  const inputImages = document.getElementById('image_uploads');
+
+  const curFiles = inputImages.files;
+  let isImagesValide = true;
+
+  for (const file of curFiles) {
+    if (!validFileType(file) || file.size > 2 * 1024 * 1024) {
+      isImagesValide = false;
+      break;
+    }
+  }
+
+  if ((z.trim() == "" && curFiles.length === 0) || !isImagesValide) {
     document.getElementById("newcomment").style.border = "solid 2px";
     document.getElementById("newcomment").style.borderColor = "rgb(232, 0, 0)";
     document.getElementById("newcomment").style.borderRadius = "3px";
     document.getElementById("newcomment").placeholder = "Can't submit an empty comment";
-  }
-  if (z.trim() == "") {
     return false
-  }
-  else {
+  } else {
     return true
   }
 }
@@ -404,3 +418,74 @@ function checkComment() {
     document.getElementById("newcomment").placeholder = "Write your comment...";
   }
 }
+
+function choseImage() {
+
+  const inputs = document.querySelectorAll('.image_uploads');
+
+  inputs.forEach((input) => { input.addEventListener('change', updateImageDisplay) });
+}
+
+function updateImageDisplay(event) {
+  const targetElmID = event.target.id;
+  const input = document.getElementById(targetElmID);
+  const preview = document.getElementById(targetElmID.replace('image_uploads', 'preview'));
+  while (preview.firstChild) {
+    preview.removeChild(preview.firstChild);
+  }
+
+  const curFiles = input.files;
+  if (curFiles.length === 0) {
+    const para = document.createElement('p');
+    para.textContent = 'No files currently selected for upload';
+    preview.appendChild(para);
+  } else {
+    const list = document.createElement('ol');
+    preview.appendChild(list);
+
+    for (const file of curFiles) {
+      const listItem = document.createElement('li');
+      const para = document.createElement('p');
+      if (validFileType(file)) {
+        if (file.size > 2 * 1024 * 1024) {
+          para.textContent = 'file is too big';
+        } else {
+          para.textContent = `File name ${file.name}, file size ${returnFileSize(file.size)}.`;
+          const image = document.createElement('img');
+          image.src = URL.createObjectURL(file);
+          listItem.appendChild(image);
+        }
+        listItem.appendChild(para);
+      } else {
+        para.textContent = `File name ${file.name}: Not a valid file type. Update your selection.`;
+        listItem.appendChild(para);
+      }
+
+      list.appendChild(listItem);
+    }
+  }
+}
+
+const fileTypes = [
+  "image/bmp",
+  "image/gif",
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/svg+xml",
+];
+
+function validFileType(file) {
+  return fileTypes.includes(file.type);
+}
+
+function returnFileSize(number) {
+  if (number < 1024) {
+    return `${number} bytes`;
+  } else if (number >= 1024 && number < 1048576) {
+    return `${(number / 1024).toFixed(1)} KB`;
+  } else if (number >= 1048576) {
+    return `${(number / 1048576).toFixed(1)} MB`;
+  }
+}
+

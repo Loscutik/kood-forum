@@ -530,4 +530,17 @@ a {
   #images {
     width: 90%;
   }
+
+  .labelfordownload {
+    display: inline-block;
+  }
+
+  .hidden {
+    opacity: 0;
+  }
+
+  form img {
+    height: 64px;
+    order: 1;
+}   
   

@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"fmt"
+	"math/rand"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -85,24 +87,42 @@ func PostCreatorHandler(app *application.Application) http.HandlerFunc {
 			Forbidden(app, w, r)
 			return
 		}
+
 		// continue for the loggedin status only
 		// get data from the request
-		err = r.ParseForm()
-		if err != nil {
-			ServerError(app, w, r, "parsing form error", err)
+		if err := r.ParseMultipartForm(MaxUploadSize); err != nil {
+			ServerError(app, w, r, "Cannot parse multipart form", err)
 			return
 		}
 
+		dateCreate := time.Now()
 		theme := r.PostFormValue(F_THEME)
 		content := r.PostFormValue(F_CONTENT)
+		imageFiles := r.MultipartForm.File[F_IMAGES]
+		imagesTmpDir := fmt.Sprintf("%s/tmp_%d%d_%d", USER_IMAGES_DIR, dateCreate.Second(), dateCreate.Nanosecond(), rand.Intn(100))
+		if imageFiles != nil {
+			err := os.Mkdir(imagesTmpDir, 0o750)
+			if err != nil && !os.IsExist(err) {
+				ServerError(app, w, r, "Can't create tmp directory", err)
+				return
+			}
+		}
+		var imagesList []string
+		for _, fileHeader := range imageFiles {
+			newFileName, err := uploadFile(MaxFileUploadSize, fileHeader, imagesTmpDir)
+			imagesList = append(imagesList, newFileName)
+			if err != nil {
+				ServerError(app, w, r, "Can't upload the file", err)
+				return
+			}
+
+		}
 
 		authorID, err := strconv.Atoi(r.PostFormValue(F_AUTHORID))
 		if err != nil || authorID < 1 {
 			ClientError(app, w, r, http.StatusBadRequest, fmt.Sprintf("wrong athor id: %s, err: %s", r.PostFormValue(F_AUTHORID), err))
 			return
 		}
-
-		dateCreate := time.Now()
 
 		categories := r.PostForm[F_CATEGORIESID]
 		categoriesID := make([]int, len(categories))
@@ -115,17 +135,19 @@ func PostCreatorHandler(app *application.Application) http.HandlerFunc {
 			categoriesID[i] = id
 		}
 
-		if strings.TrimSpace(theme) == "" || strings.TrimSpace(content) == "" || len(categories) == 0 || categoriesID[0] == 0 {
+		if strings.TrimSpace(theme) == "" || (strings.TrimSpace(content) == "" && len(imagesList) == 0) || len(categories) == 0 || categoriesID[0] == 0 {
 			ClientError(app, w, r, http.StatusBadRequest, "post creating failed: empty data")
 			return
 		}
 
 		// add post to the DB
-		id, err := app.ForumData.InsertPost(theme, content, authorID, dateCreate, categoriesID)
+		id, err := app.ForumData.InsertPost(theme, content, imagesList, authorID, dateCreate, categoriesID)
 		if err != nil {
 			ServerError(app, w, r, "insert to DB failed", err)
 			return
 		}
+
+		os.Rename(imagesTmpDir, fmt.Sprintf("p%d", id))
 		// redirect to the post page
 		http.Redirect(w, r, "/post/p"+strconv.Itoa(id), http.StatusSeeOther)
 	}
